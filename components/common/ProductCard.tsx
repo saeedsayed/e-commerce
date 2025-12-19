@@ -1,3 +1,4 @@
+"use client";
 import { IProduct } from "@/types";
 import Image from "next/image";
 import { FaStar } from "react-icons/fa";
@@ -5,7 +6,6 @@ import Button from "./Button";
 import { FaRegHeart } from "react-icons/fa";
 import { discountCalc } from "@/lib/discountCalc";
 import Link from "next/link";
-import { calcStarRate } from "@/lib/calcStarRate";
 import { useWishlistContext } from "@/context/WishlistContext";
 import { useCartContext } from "@/context/CartContext";
 type Props = {
@@ -13,36 +13,48 @@ type Props = {
 };
 
 const ProductCard = ({ data }: Props) => {
-  const { attributes: product } = data;
-  const {wishlist,handleWishlist,wishlistStatus}= useWishlistContext()
-  const {addToCart, cartStatus}=useCartContext()
-  const isFavorite = wishlist.find((item) => item.id === data.id);
+  const product = data;
+  const { wishlist, handleWishlist, wishlistStatus } = useWishlistContext();
+  const { addToCart, cartStatus } = useCartContext();
+  const isFavorite = true;
+  // const isFavorite = wishlist.find((item) => item._id === data._id);
+  const isNew =
+    new Date(product.createdAt) >=
+    new Date(new Date().setDate(new Date().getDate() - 14));
   return (
     <Link
-      href={`/shop/${data.id}?name=${product.name}`}
+      href={`/shop/${data._id}?name=${product.title}`}
       className="select-none block [&:hover_button]:opacity-100"
     >
       <div className="bg-primary p-2 sm:p-4">
         <div className="flex justify-between items-center">
           <div className="flex gap-1 md:gap-2 items-center sm:flex-col">
-            <div className="bg-white text-sm sm:text-base px-1 sm:px-4 rounded-md mb-1 sm:mb-2 font-bold">
+            <div
+              className={`bg-white text-sm sm:text-base px-1 sm:px-4 rounded-md mb-1 sm:mb-2 font-bold ${
+                isNew ? "text-green-600" : "opacity-0"
+              }`}
+            >
               NEW
             </div>
             <div
               className={`bg-badge text-sm sm:text-base text-second-text px-1 sm:px-4 rounded-md font-bold ${
-                !product.sale && "opacity-0"
+                !product.discount && "opacity-0"
               }`}
             >
-              -{product.sale}%
+              -
+              {discountCalc(product.price, product.discount).discountPercentage}
+              %
             </div>
           </div>
           <button
             className={`
               ${isFavorite ? "text-red-500" : "text-text"}
-             cursor-pointer p-2 rounded-full aspect-square  shadow md:opacity-0 transition-all ${wishlistStatus === "loading" && "cursor-not-allowed"}`}
+             cursor-pointer p-2 rounded-full aspect-square  shadow md:opacity-0 transition-all ${
+               wishlistStatus === "loading" && "cursor-not-allowed"
+             }`}
             onClick={(e) => {
               e.preventDefault();
-              handleWishlist(data.id);
+              handleWishlist(data._id);
             }}
           >
             <FaRegHeart />
@@ -50,11 +62,11 @@ const ProductCard = ({ data }: Props) => {
         </div>
         <div className="relative w-full aspect-[4/3] md:aspect-auto md:h-52">
           <Image
-            src={product.thumbnail.data.attributes.url}
-            alt={product.name}
+            src={product.thumbnail}
+            alt={product.title}
             fill
             sizes="10000rem"
-            className="object-contain drop-shadow-2xl h-auto"
+            className="object-contain "
           />
         </div>
         <Button
@@ -63,7 +75,7 @@ const ProductCard = ({ data }: Props) => {
           }`}
           onClick={(e) => {
             e.preventDefault();
-            addToCart(data.id, 1, "any");
+            // addToCart(data._id, 1, "any");
           }}
         >
           Add to cart
@@ -71,18 +83,16 @@ const ProductCard = ({ data }: Props) => {
       </div>
       <div className="flex flex-col sm:gap-3 mt-3">
         <div className="flex">
-          {[...Array(calcStarRate(product?.review?.map((e) => e.rate)))].map(
-            (e, i) => (
-              <span className="text-yellow-500" key={i}>
-                <FaStar />
-              </span>
-            )
-          )}
+          {[...Array(product.rating || 4)].map((e, i) => (
+            <span className="text-yellow-500" key={i}>
+              <FaStar />
+            </span>
+          ))}
         </div>
-        <h3 className="font-semibold">{product.name}</h3>
+        <h3 className="font-semibold">{product.title}</h3>
         <p className="font-semibold">
-          ${discountCalc(product.price, product.sale)}{" "}
-          {product.sale && (
+          ${discountCalc(product.price, product.discount).newPrice}{" "}
+          {product?.discount > 0 && (
             <span className="text-sub-text line-through ms-3">
               ${product.price}
             </span>

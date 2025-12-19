@@ -1,6 +1,6 @@
 "use client";
 import { useShopContext } from "@/context/ShopContext";
-import { Color } from "@/types/productDetails";
+import { Color } from "@/types/product.type";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 

@@ -16,7 +16,7 @@ import { useRouter } from "next/navigation";
 // types
 interface IWishlistContext {
     wishlist: Datum[];
-    handleWishlist: (id: number) => void;
+    handleWishlist: (id: string) => void;
     wishlistStatus: "loading" | "done" | "empty";
 }
 
@@ -38,7 +38,7 @@ const WishlistProvider = ({ children }: { readonly children: ReactNode }) => {
     const router = useRouter()
 
     // add or remove from wishlist
-    const handleWishlist = async (id: number) => {
+    const handleWishlist = async (id: String) => {
         // check if user is logged in
         if (status === "unauthenticated") {
             toast.error("Please login first");

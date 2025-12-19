@@ -1,5 +1,5 @@
 // get api token from environment variable
-const baseUrl = process.env.NEXT_PUBLIC_STRAPI_API;
+const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
 export const getData = async (
     endPoint: string,
@@ -14,7 +14,7 @@ export const getData = async (
     let error: string | null = null;
     let response: any[] = [];
     // construct query params
-    const populates = !!populate ? populate.map((p, i) => `populate=${p}&`) : "";
+    // const populates = !!populate ? populate.map((p, i) => `populate=${p}&`) : "";
     const filter = !!filters
         ? filters.map(
             ({ field, operator, value }) =>
@@ -23,7 +23,7 @@ export const getData = async (
         : "";
     const page_size = !!pageSize ? `pagination[pageSize]=${pageSize}&` : "";
     // construct api url with query params and remove commas
-    const apiUrl = `${baseUrl}${endPoint}?${populates}${filter}${page_size}`.replaceAll(",", "");
+    const apiUrl = `${baseUrl}${endPoint}?${filter}${page_size}`.replaceAll(",", "");
     try {
         // fetch data from api url
         const apiCall = await fetch(apiUrl, {

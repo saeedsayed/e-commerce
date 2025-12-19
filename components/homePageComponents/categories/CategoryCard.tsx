@@ -11,15 +11,14 @@ interface IProps {
 }
 
 const CategoryCard = ({ size, data }: IProps) => {
-  const { attributes: category } = data;
   return (
     <Link
-      href={`/shop?category=${category?.name}`}
+      href={`/shop?category=${data?.name}`}
       className={`flex gap-12 ${size === "lg" ? "flex-col" : "flex-row"
         } flex-1 bg-primary p-8 md:p-12`}
     >
       <div>
-        <h3 className="text-2xl md:text-[34px] mb-3">{category?.name}</h3>
+        <h3 className="text-2xl md:text-[34px] mb-3">{data?.name}</h3>
         <div className="text-sub-text whitespace-nowrap inline-flex items-center gap-2
          border-b-2 [&:hover_.arrow]:translate-x-1 [&:hover]:text-blue-500">
           Shop Now <FaArrowRight className="arrow transition-all" />
@@ -30,8 +29,8 @@ const CategoryCard = ({ size, data }: IProps) => {
           }`}
       >
         <Image
-          src={category.thumbnail.data.attributes.url}
-          alt={category.name}
+          src={data?.image}
+          alt={data?.name}
           fill
           className="object-contain"
         />

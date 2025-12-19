@@ -1,13 +1,12 @@
-import { getData } from "@/lib/getAPI";
 import { ArrowLink } from "@/components/common";
 import { IProduct } from "@/types";
 import BestSellerSlide from "./BestSellerSlide";
+import { axiosInstance } from "@/lib/axios";
 
 const BestSeller = async () => {
-  const [error, response]: [string | null, IProduct[]] = await getData("products", [
-    "thumbnail",
-    "review",
-  ]);
+  const { data } = await axiosInstance<{ data: IProduct[] }>(
+    "home/latest-products"
+  );
   return (
     <div className="container mt-12">
       <div className="flex justify-between mb-12 items-center">
@@ -16,7 +15,7 @@ const BestSeller = async () => {
         </h2>
         <ArrowLink href="shop">More Products</ArrowLink>
       </div>
-      <BestSellerSlide data={response} />
+      <BestSellerSlide data={data.data} />
     </div>
   );
 };

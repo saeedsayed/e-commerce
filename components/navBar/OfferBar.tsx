@@ -12,7 +12,7 @@ const OfferBar = () => {
   return (
     <>
       {showBar &&
-        <div onClick={() => router.push('/shop')} className={`flex items-center justify-center bg-primary py-2 gap-3 relative cursor-pointer`}>
+        <div onClick={() => router.push('/shop')} className={`flex items-center justify-center bg-primary py-2 gap-3 relative cursor-pointer select-none`}>
           <CiDiscount1 className="w-4 h-4 sm:w-6 sm:h-6 font-bold " />
           <p className="sm:text-sm text-xs font-semibold">
             30% off storewide — Limited time!

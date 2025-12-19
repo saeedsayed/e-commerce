@@ -1,35 +1,20 @@
-"use client";
-import { getData } from "@/lib/getAPI";
 import { ICategory } from "@/types";
-import React, { useEffect, useState } from "react";
+
 import { VscSettings } from "react-icons/vsc";
 import SliderRange from "./SliderRange";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
-import { useRouter } from "next/navigation";
+
+import { axiosInstance } from "@/lib/axios";
 
 type Props = {
-  setRangePrice: React.Dispatch<React.SetStateAction<number[]>>;
-  rangeTo: number;
+  searchParams: { [key: string]: string | string[] | undefined };
 };
 
-const Filter = ({
-  setRangePrice,
-  rangeTo,
-}: Props) => {
-  const [categories, setCategories] = useState<ICategory[]>([]);
-  const searchParams = useSearchParams().get('category')
-  const router = useRouter()
-  useEffect(() => {
-    (async () => {
-      const [error, data]: [string | null, ICategory[]] = await getData(
-        "categories"
-      );
-      if (!error) {
-        setCategories(data);
-      }
-    })();
-  }, []);
+const Filter = async ({ searchParams }: Props) => {
+  const {
+    data: { data: categories },
+  } = await axiosInstance<{ data: ICategory[] }>("categories");
+
   return (
     <div className="flex flex-col gap-8">
       <h3 className="text-xl font-semibold flex gap-2 items-center">
@@ -50,25 +35,37 @@ const Filter = ({
             <>
               <li>
                 <Link
-                  className={`text-sub-text font-semibold ${!searchParams
-                    ? "text-text border-b border-b-black"
-                    : ""
-                    }`}
+                  className={`text-sub-text font-semibold ${
+                    !searchParams?.category
+                      ? "text-text border-b border-b-black"
+                      : ""
+                  }`}
                   href={"/shop"}
+                  scroll={false}
                 >
                   All
                 </Link>
               </li>
               {categories.map((category) => (
-                <li key={category.id}>
+                <li key={category._id}>
                   <Link
-                    className={`text-sub-text font-semibold ${searchParams === category.attributes.name
-                      ? "text-text border-b border-b-black"
-                      : ""
-                      }`}
-                    href={`/shop?category=${category.attributes.name}`}
+                    className={`text-sub-text font-semibold ${
+                      searchParams?.category === category.name
+                        ? "text-text border-b border-b-black"
+                        : ""
+                    }`}
+                    href={`/shop?category=${category.name}${
+                      searchParams.minPrice
+                        ? `&minPrice=${searchParams.minPrice}`
+                        : ""
+                    }${
+                      searchParams.maxPrice
+                        ? `&maxPrice=${searchParams.maxPrice}`
+                        : ""
+                    }`}
+                    scroll={false}
                   >
-                    {category.attributes.name}
+                    {category.name}
                   </Link>
                 </li>
               ))}
@@ -79,7 +76,7 @@ const Filter = ({
       <div>
         {/*price filter*/}
         <h4 className="text-lg font-medium mb-3 uppercase">price</h4>
-        <SliderRange rangeTo={rangeTo} handleRangePrice={setRangePrice} />
+        <SliderRange />
       </div>
     </div>
   );

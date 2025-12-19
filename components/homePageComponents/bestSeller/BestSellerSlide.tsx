@@ -23,7 +23,7 @@ const BestSellerSlide = ({ data }: Props) => {
         className="[&_.swiper-slide]:w-[252px]"
       >
         {data.map((product) => (
-          <SwiperSlide key={product.id} className="mb-12">
+          <SwiperSlide key={product._id} className="mb-12">
             <ProductCard data={product} />
           </SwiperSlide>
         ))}
