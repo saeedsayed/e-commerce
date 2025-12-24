@@ -1,11 +1,10 @@
-import React from "react";
 import {
   PagesTitle,
-  OrdersTable,
-  OrderTableForSmallDevices,
+  // OrdersTable,
+  // OrderTableForSmallDevices,
 } from "@/components/profilePageComponents";
-import { Order } from "@/types/order";
-import Link from "next/link";
+// import { Order } from "@/types/order";
+// import Link from "next/link";
 
 const Orders = async () => {
   // const [err, orders]: [string | null, Order[]] = await getData(

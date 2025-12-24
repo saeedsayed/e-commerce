@@ -1,16 +1,16 @@
-import React from "react";
-import { IArticle } from "@/types";
-import { ArrowLink, ArticleCard, Breadcrumbs } from "@/components/common";
-import Image from "next/image";
-import HandleArticleBody from "@/components/blogPageComponents/blogDetails/HandleArticleBody";
+// import React from "react";
+// import { IArticle } from "@/types";
+// import { ArrowLink, ArticleCard, Breadcrumbs } from "@/components/common";
+// import Image from "next/image";
+// import HandleArticleBody from "@/components/blogPageComponents/blogDetails/HandleArticleBody";
 
-type Props = {
-  params: {
-    slug: string;
-  };
-};
+// type Props = {
+//   params: {
+//     slug: string;
+//   };
+// };
 
-const page = async ({ params }: Props) => {
+const page = async () => {
   // const [error, data]: [string | null, Article] = await getData(
   //   `articles/${params.slug}`,
   //   ["*"]

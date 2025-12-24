@@ -1,6 +1,5 @@
 import BlogList from '@/components/blogPageComponents/BlogList'
 import { PageHeader } from '@/components/common'
-import React from 'react'
 
 const page = () => {
     return (
