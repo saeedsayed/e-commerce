@@ -1,113 +1,79 @@
 "use client";
-import { getData } from "@/lib/getAPI";
-import { useSession } from "next-auth/react";
-import {
-    createContext,
-    ReactNode,
-    useContext,
-    useEffect,
-    useState,
-} from "react";
+import { createContext, ReactNode, useContext } from "react";
 import { toast } from "react-hot-toast";
-import { Datum } from "@/types/wishlist";
-import { addOrRemoveFromWishlist } from "@/lib/addOrRemoveFromWishlist";
-import { useRouter } from "next/navigation";
+
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { axiosInstance } from "@/lib/axios";
+import { IProduct } from "@/types";
 
 // types
 interface IWishlistContext {
-    wishlist: Datum[];
-    handleWishlist: (id: string) => void;
-    wishlistStatus: "loading" | "done" | "empty";
+  wishlist: IProduct[];
+  isLoadingWishlist: boolean;
+  handleWishlist: (productId: string) => void;
 }
 
 // create context
 const WishlistContext = createContext<IWishlistContext>({
-    wishlist: [],
-    wishlistStatus: "loading",
-    handleWishlist: () => { },
+  wishlist: [],
+  isLoadingWishlist: false,
+  handleWishlist: () => {},
 });
 
 const WishlistProvider = ({ children }: { readonly children: ReactNode }) => {
-    // states
-    const [wishlist, setWishlist] = useState<Datum[]>([]);
-    const [wishlistStatus, setWishlistStatus] = useState<
-        "loading" | "done" | "empty"
-    >("loading");
-    // get session client side
-    const { data: session, status } = useSession();
-    const router = useRouter()
+  // fetch wishlist data
+  const { data, isLoading, refetch } = useQuery({
+    queryKey: ["wishlist"],
+    queryFn: async () => {
+      const { data } = await axiosInstance<{ data: IProduct[] }>("wishlist");
+      return data.data;
+    },
+  });
+  //   add to wishlist
+  const { isPending: handling, mutate: handleWishlist } = useMutation({
+    mutationFn: async (productId: string) => {
+      if (handling) throw new Error("Already handling request");
+      if (data?.find((item) => item._id === productId)) {
+        const { data } = await axiosInstance.delete<{ message: string }>(
+          `wishlist`,
+          { data: { productId } }
+        );
+        return data;
+      } else {
+        const { data } = await axiosInstance.post<{ message: string }>(
+          `wishlist`,
+          { productId }
+        );
+        return data;
+      }
+    },
+    onSuccess: (data) => {
+      toast.success(data.message);
+      refetch();
+    },
+    onError: (error: any) => {
+      toast.error(
+        error.response?.data?.message || error.message || "Something went wrong"
+      );
+    },
+  });
 
-    // add or remove from wishlist
-    const handleWishlist = async (id: String) => {
-        // check if user is logged in
-        if (status === "unauthenticated") {
-            toast.error("Please login first");
-            router.push('/login')
-            return;
-        }
-        if (status === "loading") {
-            toast.error("Please wait...");
-            return;
-        }
-        if (wishlistStatus === "loading") {
-            toast.error("Please wait...");
-            return;
-        }
-        setWishlistStatus("loading");
-        // get wishlist and wishlist status from another async function
-        const { newWishlistData, newWishlistStatus } =
-            await addOrRemoveFromWishlist(
-                session?.user?.wishlistId as number,
-                id,
-                wishlist
-            );
-        // update wishlist and wishlist status
-        setWishlist(newWishlistData);
-        setWishlistStatus(newWishlistStatus);
-    };
-
-    // get wishlist first time
-    useEffect(() => {
-        if (status === "authenticated") {
-            (async () => {
-                try {
-                    // get wishlist from api first time when user is authenticated
-                    setWishlistStatus("loading");
-                    const [err, data] = await getData(
-                        `wishlists/${session?.user?.wishlistId}`,
-                        ["products.thumbnail"]
-                    );
-                    if (err) throw new Error(err);
-                    setWishlist(data.attributes.products.data);
-                    setWishlistStatus(
-                        data.attributes.products.data.length > 0 ? "done" : "empty"
-                    );
-                } catch (err) {
-                    console.log(err);
-                }
-            })();
-        } else if (status === "unauthenticated") {
-            setWishlist([]);
-            setWishlistStatus("empty");
-        }
-    }, [status]);
-
-    return (
-        <WishlistContext.Provider
-            value={{
-                wishlist,
-                wishlistStatus,
-                handleWishlist,
-            }}
-        >
-            {children}
-        </WishlistContext.Provider>
-    );
+  return (
+    <WishlistContext.Provider
+      value={{
+        wishlist: data as IProduct[],
+        isLoadingWishlist: isLoading || handling,
+        handleWishlist,
+      }}
+    >
+      {children}
+    </WishlistContext.Provider>
+  );
 };
 
 export default WishlistProvider;
 
 // custom hook to use context
 export const useWishlistContext = () => {
-    return useContext(WishlistContext);
+  return useContext(WishlistContext);
 };

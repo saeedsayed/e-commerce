@@ -28,7 +28,7 @@ const FlyoutCart = ({ isOpen, handleClose }: Props) => {
             onClick={handleClose}
           >
             {cart.map((data) => (
-              <CartItem key={data.id} data={data} />
+              <CartItem key={data.product._id} data={data} />
             ))}
           </ul>
           <div>

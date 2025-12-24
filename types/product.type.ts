@@ -120,28 +120,25 @@
 // }
 
 export interface IProduct {
-    discount:     number;
-    _id:          string;
-    title:        string;
-    price:        number;
-    description:  string;
-    thumbnail:    string;
-    category:     string[];
-    stock:        number;
-    images:       string[];
-    versions:     Version[];
-    rating:       number;
-    reviewsCount: number;
-    reviews:      any[];
-    createdAt:    Date;
-    updatedAt:    Date;
+  discount: number;
+  _id: string;
+  title: string;
+  price: number;
+  description: string;
+  thumbnail: string;
+  category: string[];
+  stock: number;
+  images: string[];
+  versions: IVersion[];
+  rating: number;
+  reviewsCount: number;
+  reviews: any[];
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-export interface Version {
-    title:     string;
-    price:     number;
-    stock:     number;
-    thumbnail: string;
-    images:    string[];
-    _id:       string;
+export interface IVersion {
+  version: IProduct;
+  versionName: string;
+  _id: string;
 }

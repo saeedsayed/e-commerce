@@ -6,11 +6,12 @@ import NavBar from "@/components/navBar/NavBar";
 import Footer from "@/components/footer/Footer";
 // import { SessionProvider } from "next-auth/react";
 import { Toaster } from "react-hot-toast";
-import ShopProvider from "@/context/ShopContext";
 import CartProvider from "@/context/CartContext";
 import WishlistProvider from "@/context/WishlistContext";
-import AuthProvider from "@/context/AuthProvider";
+import AuthProvider from "@/context/AuthContext";
 import InternetChecker from "@/components/common/InternetChecker";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import ReactQueryProvider from "@/context/ReactQueryContext";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -32,25 +33,25 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className} suppressHydrationWarning>
-        <AuthProvider>
-          <ShopProvider>
+        <ReactQueryProvider>
+          <AuthProvider>
             <WishlistProvider>
-              <CartProvider>
-                <NavBar />
-                <Toaster
-                  position="top-left"
-                  toastOptions={{
-                    duration: 5000,
-                    className: "text-xl sm:text-2xl font-semibold",
-                  }}
-                />
-                {children}
-                <Footer />
-              </CartProvider>
+            <CartProvider>
+              <NavBar />
+              <Toaster
+                position="top-left"
+                toastOptions={{
+                  duration: 5000,
+                  className: "text-xl sm:text-2xl font-semibold",
+                }}
+              />
+              {children}
+              <Footer />
+            </CartProvider>
             </WishlistProvider>
-          </ShopProvider>
-        </AuthProvider>
-        <InternetChecker />
+          </AuthProvider>
+          <InternetChecker />
+        </ReactQueryProvider>
       </body>
     </html>
   );

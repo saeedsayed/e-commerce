@@ -7,11 +7,11 @@ import { useWishlistContext } from "@/context/WishlistContext";
 import { useCartContext } from "@/context/CartContext";
 
 const SmallDevicesWishlistTable = () => {
-  const { handleWishlist, wishlist, wishlistStatus } = useWishlistContext();
-  const { addToCart } = useCartContext()
+  const { wishlist, isLoadingWishlist, handleWishlist } = useWishlistContext();
+  const { addToCart } = useCartContext();
   return (
     <>
-      {wishlistStatus === "done" && (
+      {!isLoadingWishlist && (
         <div className="md:hidden">
           <h5 className="pb-2 ps-12 text-sm text-sub-text border-b border-b-[#E8ECEF]">
             Product
@@ -19,25 +19,25 @@ const SmallDevicesWishlistTable = () => {
           <div>
             {wishlist.map((item) => (
               <Link
-                href={`/shop/${item.id}`}
-                key={item.id}
+                href={`/shop/${item._id}`}
+                key={item._id}
                 className="block border-b py-4"
               >
                 <button
                   className="w-6 aspect-square"
                   onClick={(e) => {
                     e.preventDefault();
-                    handleWishlist(item.id);
+                    handleWishlist(item._id);
                   }}
                 >
                   <IoClose />
                 </button>
-                <WishlistItem data={item.attributes} />
+                <WishlistItem data={item} />
                 <Button
                   className={"md:hidden w-full mt-4"}
                   onClick={(e) => {
                     e.preventDefault();
-                    addToCart(item.id, 1, "any");
+                    addToCart(item._id, 1);
                   }}
                 >
                   Add to cart

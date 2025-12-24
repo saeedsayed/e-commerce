@@ -11,7 +11,7 @@ const OrderSummary = () => {
       <h3 className='text-2xl font-medium mb-4'>Order Summary</h3>
       <ul>
         {cart.map((item) => (
-          <CartItem key={item.id} data={item} />
+          <CartItem key={item.product._id} data={item} />
         ))}
       </ul>
       <div className='flex items-center my-5 gap-3'>

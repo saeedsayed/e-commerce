@@ -10,7 +10,7 @@ import SideNavLinks from "./SideNavLinks";
 import Button from "../../common/Button";
 import SocialLinks from "./SocialLinks";
 import Link from "next/link";
-import { useSession } from "next-auth/react";
+import { useAuthContext } from "@/context/AuthContext";
 
 interface Props {
   showMenu: boolean;
@@ -18,7 +18,7 @@ interface Props {
 }
 
 const SideMenu = ({ showMenu, setShowMenu }: Props) => {
-  const session = useSession();
+  const { status } = useAuthContext();
   return (
     <Flyout position="left" isOpen={showMenu} handleClose={setShowMenu}>
       <div className="flex flex-col justify-between h-full">
@@ -35,7 +35,7 @@ const SideMenu = ({ showMenu, setShowMenu }: Props) => {
         </div>
         <div className="flex flex-col gap-[19px]">
           <SideMenuIcons handleClose={setShowMenu} />
-          {session.status === "unauthenticated" && (
+          {status === "unauthenticated" && (
             <Link href="/login" className="block">
               <Button className="w-full" onClick={setShowMenu}>
                 sign in

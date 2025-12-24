@@ -1,4 +1,3 @@
-// "use client";
 import {
   PageHeader,
   ProductCard,
@@ -8,13 +7,7 @@ import Filter from "@/components/shopPageComponents/Filter";
 import { axiosInstance } from "@/lib/axios";
 import { IProduct } from "@/types";
 import { Suspense } from "react";
-// import { getData } from "@/lib/getAPI";
-// import { useEffect, useState } from "react";
-// import { IProduct } from "@/types";
 import Image from "next/image";
-// import { useSearchParams } from "next/navigation";
-
-
 
 const page = async ({
   searchParams,
@@ -22,7 +15,6 @@ const page = async ({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) => {
   const params = await searchParams;
-  // console.log("search params in shop page", params);
   const {
     data: { data: products },
   } = await axiosInstance<{ data: IProduct[] }>(
@@ -30,45 +22,6 @@ const page = async ({
       params.minPrice ? `minPrice=${params.minPrice}&` : ""
     }${params.maxPrice ? `maxPrice=${params.maxPrice}` : ""}`
   );
-  // const [rangePrice, setRangePrice] = useState<number[]>(
-  //   initialState.rangePrice
-  // );
-  // const [products, setProducts] = useState<IProduct[]>([]);
-  // const [loadingProducts, setLoadingProducts] = useState<boolean>(true);
-
-  // const searchParamsCategory = useSearchParams().get("category");
-
-  // useEffect(() => {
-  //   (async () => {
-  //     setLoadingProducts(true);
-  //     const [error, response] = await getData(
-  //       // endpoint
-  //       "products",
-  //       // populate
-  //       ["thumbnail", "review"],
-  //       // filters
-  //       [
-  //         {
-  //           field: "[price]",
-  //           operator: "between",
-  //           value: rangePrice[0].toString(),
-  //         },
-  //         {
-  //           field: "[price]",
-  //           operator: "between",
-  //           value: rangePrice[1].toString(),
-  //         },
-  //         {
-  //           field: `${!searchParamsCategory ? `\\` : ""}[categories][name]`,
-  //           operator: "eqi",
-  //           value: searchParamsCategory,
-  //         },
-  //       ]
-  //     );
-  //     setProducts(response);
-  //     setLoadingProducts(false);
-  //   })();
-  // }, [rangePrice, searchParamsCategory]);
 
   return (
     <div className="container">
@@ -83,11 +36,7 @@ const page = async ({
       />
       <div className="my-8 md:mt-14 flex flex-col md:flex-row items-start gap-6">
         <div className="w-full md:w-[262px] md:sticky top-6">
-          <Filter
-          searchParams={params}
-            // setRangePrice={setRangePrice}
-            // rangeTo={initialState.rangeTo}
-          />
+          <Filter searchParams={params} />
         </div>
         <div className="flex-1 m-auto">
           <div className="flex justify-between items-center mb-10">
@@ -96,13 +45,6 @@ const page = async ({
             </h3>
             <div className="w-36 md:w-96 h-8 bg-primary"></div>
           </div>
-          {/* {loadingProducts && (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-10">
-              {[...Array(6)].map((_, i) => (
-                <ProductCardSkeleton key={i} />
-              ))}
-            </div>
-          )} */}
           <Suspense
             fallback={
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-10">

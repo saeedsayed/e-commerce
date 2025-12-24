@@ -2,32 +2,19 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { PROFILE_LINKS } from "@/constants/index";
-import Image from "next/image";
 import { Button } from "../common";
-import { signOut } from "next-auth/react";
 import ChangeAvatarButton from "./ChangeAvatarButton";
+import { useAuthContext } from "@/context/AuthContext";
 
-type Props = {
-  user: any;
-};
-
-
-const ProfileNav = ({ user }: Props) => {
+const ProfileNav = () => {
   const currentPath = usePathname();
   const router = useRouter();
+  const { user } = useAuthContext();
   return (
     <div className="bg-primary px-4 py-10 h-fit">
       <div className="flex flex-col items-center mb-10">
-        <div className="relative mb-2 w-20 h-20">
-          <Image
-            src={user?.image as string}
-            alt="user avatar"
-            fill
-            className="rounded-full"
-          />
-          <ChangeAvatarButton user={user} />
-        </div>
-        <h2 className="text-xl font-semibold">{user?.userName}</h2>
+        <ChangeAvatarButton />
+        <h2 className="text-xl font-semibold">{user?.fullName}</h2>
       </div>
       <nav className="hidden sm:block">
         <ul className="flex flex-col gap-3 w-56">
@@ -35,10 +22,11 @@ const ProfileNav = ({ user }: Props) => {
             <li key={link.name}>
               <Link
                 href={link.path}
-                className={`${currentPath === link.path
-                  ? "text-text border-b border-b-black"
-                  : "text-sub-text"
-                  } py-2 block`}
+                className={`${
+                  currentPath === link.path
+                    ? "text-text border-b border-b-black"
+                    : "text-sub-text"
+                } py-2 block`}
               >
                 {link.name}
               </Link>
@@ -61,7 +49,7 @@ const ProfileNav = ({ user }: Props) => {
       </select>
       <Button
         className="text-sub-text py-2 w-full mt-2"
-        onClick={() => signOut()}
+        onClick={() => {localStorage.removeItem("user"); router.push("/");}}
       >
         Logout
       </Button>

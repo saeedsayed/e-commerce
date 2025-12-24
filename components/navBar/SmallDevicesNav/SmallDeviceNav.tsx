@@ -8,15 +8,15 @@ import NavLogo from "../NavLogo";
 import SideMenu from "./SideMenu";
 import FlyoutCart from "../../flyoutCart/FlyoutCart";
 import { useCartContext } from "@/context/CartContext";
-import { useSession } from "next-auth/react";
 import { Button, Dots } from "@/components/common";
 import Link from "next/link";
+import { useAuthContext } from "@/context/AuthContext";
 
 const SmallDeviceNav = () => {
   const [showMenu, setShowMenu] = useState(false);
   const [showFlyout, setShowFlyout] = useState(false);
   const { cart } = useCartContext()
-  const { status } = useSession()
+  const { status } = useAuthContext()
   const cartItemCount = cart.length
   const handleShowMenu = () => {
     setShowMenu((p) => !p);

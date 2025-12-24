@@ -1,25 +1,23 @@
 "use client";
-import { Button } from "@/components/common";
+import { Button, Spinner } from "@/components/common";
 import { Counter } from "@/components/common";
 import { useCartContext } from "@/context/CartContext";
-import { useShopContext } from "@/context/ShopContext";
 import { useWishlistContext } from "@/context/WishlistContext";
 import React, { useState } from "react";
 import { BiHeart } from "react-icons/bi";
 
 type Props = {
-  id: number;
+  id: string;
   stock: number;
 };
 
 const ProductAction = ({ id, stock }: Props) => {
-  const { addToCart } = useCartContext();
-  const { wishlist, handleWishlist } = useWishlistContext()
-  const { color } = useShopContext();
+  const { addToCart, cartStatus } = useCartContext();
+  const { wishlist, handleWishlist, isLoadingWishlist } = useWishlistContext();
   const [count, setCount] = useState<number>(1);
-  const isFavorite = !!wishlist.find((item) => item.id === id);
+  const isFavorite = !!wishlist?.find((item) => item._id === id);
   const handleAddToCart = () => {
-    addToCart(id, count, color);
+    addToCart(id, count);
   };
 
   return (
@@ -31,14 +29,19 @@ const ProductAction = ({ id, stock }: Props) => {
           onClick={() => {
             handleWishlist(id);
           }}
-          className={`${isFavorite ? "bg-red-500 text-primary" : "bg-transparent"
-            } border border-black rounded-lg text-lg text-black flex justify-center gap-2 items-center flex-1`}
+          className={`${
+            isFavorite ? "bg-red-500 text-primary" : "bg-transparent"
+          } border border-black rounded-lg text-lg text-black flex justify-center gap-2 items-center flex-1`}
         >
-          <BiHeart /> wishlist
+          {isLoadingWishlist ? <Spinner size="5" /> : <BiHeart />} wishlist{" "}
+          {isFavorite ? "Added" : "Add"}
         </button>
       </div>
-      <Button className="w-full py-3" onClick={handleAddToCart}>
-        Add to cart
+      <Button
+        className="flex justify-center gap-3 w-full py-3"
+        onClick={handleAddToCart}
+      >
+        Add to cart {cartStatus === "updating" && <Spinner size="5" />}
       </Button>
     </div>
   );

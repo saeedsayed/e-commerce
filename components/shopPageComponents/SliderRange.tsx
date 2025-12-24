@@ -1,5 +1,11 @@
 "use client";
-import React, { Dispatch, MutableRefObject, use, useEffect, useRef } from "react";
+import React, {
+  Dispatch,
+  MutableRefObject,
+  use,
+  useEffect,
+  useRef,
+} from "react";
 import styles from "./sliderRange.module.css";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
@@ -37,7 +43,10 @@ const SliderRange = () => {
     if (currentMinVal !== range[0] || currentMaxVal !== range[1]) {
       setCurrentMinVal(range[0]);
       setCurrentMaxVal(range[1]);
-      updateSearchParams();
+      const params = new URLSearchParams(searchParams);
+      params.delete("minPrice");
+      params.delete("maxPrice");
+      router.replace(`${pathname}?${params.toString()}`);
     }
   };
 
@@ -67,7 +76,7 @@ const SliderRange = () => {
       ((currentMinVal - range[0]) / range[1]) * 100
     }%`;
   }, [currentMinVal, currentMaxVal]);
-  
+
   useEffect(() => {
     const minPrice = searchParams.get("minPrice");
     const maxPrice = searchParams.get("maxPrice");
@@ -78,7 +87,7 @@ const SliderRange = () => {
       setCurrentMaxVal(+maxPrice);
       // setCurrentMaxVal(Math.max(range[0], Math.min(range[1], +maxPrice)));
     }
-  },[])
+  }, []);
 
   return (
     <div className=" flex flex-col gap-6">

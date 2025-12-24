@@ -1,6 +1,4 @@
-import React from "react";
 import CategoryCard from "./CategoryCard";
-import { getData } from "@/lib/getAPI";
 import { axiosInstance } from "@/lib/axios";
 import { ICategory } from "@/types";
 

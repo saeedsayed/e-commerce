@@ -1,6 +1,5 @@
-import { getData } from "@/lib/getAPI";
 import React from "react";
-import { Article } from "@/types/article.type";
+import { IArticle } from "@/types";
 import { ArrowLink, ArticleCard, Breadcrumbs } from "@/components/common";
 import Image from "next/image";
 import HandleArticleBody from "@/components/blogPageComponents/blogDetails/HandleArticleBody";
@@ -12,34 +11,34 @@ type Props = {
 };
 
 const page = async ({ params }: Props) => {
-  const [error, data]: [string | null, Article] = await getData(
-    `articles/${params.slug}`,
-    ["*"]
-  );
-  const [err, relatedData]: [string | null, Article[]] = await getData(
-    "articles",
-    ["*"],
-    [
-      {
-        field: "[categories][name]",
-        operator: "eqi",
-        value: data?.attributes?.categories?.data?.[0]?.attributes?.name,
-      },
-    ],
-    3
-  );
+  // const [error, data]: [string | null, Article] = await getData(
+  //   `articles/${params.slug}`,
+  //   ["*"]
+  // );
+  // const [err, relatedData]: [string | null, Article[]] = await getData(
+  //   "articles",
+  //   ["*"],
+  //   [
+  //     {
+  //       field: "[categories][name]",
+  //       operator: "eqi",
+  //       value: data?.attributes?.categories?.data?.[0]?.attributes?.name,
+  //     },
+  //   ],
+  //   3
+  // );
 
-  const paths = [
-    { name: "Home", path: "/" },
-    { name: "Blog", path: "/blog" },
-    { name: data?.attributes?.title, path: `/blog/${data.id}` },
-  ];
-  let arrayOfLines = data?.attributes?.body
-    .split("\n")
-    .filter((item) => item !== "");
+  // const paths = [
+  //   { name: "Home", path: "/" },
+  //   { name: "Blog", path: "/blog" },
+  //   { name: data?.attributes?.title, path: `/blog/${data.id}` },
+  // ];
+  // let arrayOfLines = data?.attributes?.body
+  //   .split("\n")
+  //   .filter((item) => item !== "");
   return (
     <div className="container mb-20">
-      <Breadcrumbs paths={paths} />
+      {/* <Breadcrumbs paths={paths} />
       <h3 className="text-xs font-bold md:mt-8 mb-6">ARTICLE</h3>
       <h2 className="text-2xl md:text-5xl font-semibold">
         {data?.attributes?.title}
@@ -56,9 +55,9 @@ const page = async ({ params }: Props) => {
         {arrayOfLines?.map((line) => (
           <HandleArticleBody key={crypto.randomUUID()} item={line} />
         ))}
-      </div>
+      </div> */}
       {/* related articles section */}
-      <div className="flex justify-between mt-20 mb-10 items-center">
+      {/* <div className="flex justify-between mt-20 mb-10 items-center">
         <h2 className="text-text text-2xl font-bold">You might also like</h2>
         <ArrowLink href="/blog">More Articles</ArrowLink>
       </div>
@@ -66,7 +65,7 @@ const page = async ({ params }: Props) => {
         {relatedData.map((item) => (
           <ArticleCard key={crypto.randomUUID()} data={item} />
         ))}
-      </div>
+      </div> */}
     </div>
   );
 };

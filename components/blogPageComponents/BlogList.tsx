@@ -1,20 +1,22 @@
-import { getData } from "@/lib/getAPI";
 import React, { Suspense } from "react";
 import { ArticleCard, ArticleCardSkeleton } from "../common";
-import { Article } from "@/types/article.type";
+import { axiosInstance } from "@/lib/axios";
+import { IArticle } from "@/types";
 
 const BlogList = async () => {
-  const [error, data]: [string | null, Article[]] = await getData("articles", [
-    "*",
-  ]);
+  const { data, status, statusText } = await axiosInstance<{
+    data: IArticle[];
+  }>("/blogs");
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
       <Suspense fallback={<ArticleCardSkeleton />}>
-        {error ? (
-          <p>{error}</p>
+        {status > 299 ? (
+          <p>{statusText}</p>
         ) : (
-          data.map((article) => <ArticleCard key={article.id} data={article} />)
+          data.data.map((article) => (
+            <ArticleCard key={article._id} data={article} />
+          ))
         )}
       </Suspense>
     </div>

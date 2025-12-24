@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server'
 
 // This function can be marked `async` if using `await` inside
 export function middleware(request: NextRequest) {
-    const cookie = request.cookies.get('authjs.session-token')?.value || request.cookies.get('__Secure-authjs.session-token')?.value
+    const cookie = request.cookies.get('token')?.value
     const { pathname, origin } = request.nextUrl
     if ((pathname === '/login' || pathname === '/register') && cookie) {
         return NextResponse.redirect(new URL('/', request.url))

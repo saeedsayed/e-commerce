@@ -1,13 +1,17 @@
 "use client";
 import Link from "next/link";
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 import Input from "./Input";
 import { Button, Spinner } from "../common";
-import * as Yup from "yup";
-import { useForm } from "react-hook-form";
+import { set, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { login } from "@/lib/actions";
 import { loginFormSchema } from "@/utils/schemes";
+import { useMutation } from "@tanstack/react-query";
+import { axiosInstance } from "@/lib/axios";
+import toast from "react-hot-toast";
+import { useAuthContext } from "@/context/AuthContext";
+import { setCookie } from "cookies-next";
+import { useRouter } from "next/navigation";
 
 type formFields = {
   email: string;
@@ -16,40 +20,57 @@ type formFields = {
 };
 
 const LoginForm = () => {
-  const [error, setError] = useState<string>("");
-  const [isLOggingIn, setLoggingIn] = useState<boolean>(false)
+  const { updateUser } = useAuthContext();
+  const router = useRouter()
   const {
     register,
     handleSubmit,
     formState: { errors },
+    getValues
   } = useForm({ resolver: yupResolver(loginFormSchema) });
+  const { isPending, isError, error, mutate } = useMutation({
+    mutationFn: async ({
+      email,
+      password,
+    }: {
+      email: string;
+      password: string;
+    }) => {
+      try {
+        const response = await axiosInstance.post("/auth/login", {
+          email: email,
+          password: password,
+        });
+        return response.data;
+      } catch (error: any) {
+        throw new Error(error.response?.data?.message || "Login failed");
+      }
+    },
+    onSuccess: (data) => {
+      toast.success("Login successful");
+      updateUser(data.data);
+      setCookie("token", data.token, {
+        maxAge: getValues("rememberMe") ? 7 * 24 * 60 * 60 : undefined,
+      }); // 7 days in seconds
+      router.push("/")
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Login failed");
+    },
+  });
 
   const onSubmit = async (data: formFields) => {
-    setLoggingIn(true)
-    setError("")
-    try {
-      const { email, password } = data
-      const res = await login(email, password);
-      if (res === "success") {
-        window.location.reload()
-      }
-      if (res === "Invalid credentials") {
-        throw new Error("password or email is incorrect")
-      }
-    } catch (err: any) {
-      setError(err.message.replace('Error: ', '') as string)
-    } finally {
-      setLoggingIn(false)
-    }
+    const { email, password } = data;
+    mutate({ email, password });
   };
-
   return (
     <>
       <h1 className="text-4xl font-semibold mb-6">sign in</h1>
       <p className="text-sub-text mb-8">
         Don't have an account yet?
         <Link href="/register" className="text-badge">
-          {' '}Register
+          {" "}
+          Register
         </Link>
       </p>
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -83,8 +104,14 @@ const LoginForm = () => {
           </label>
           <p className="font-bold cursor-not-allowed">Forgot Password?</p>
         </div>
-        {error && <p className="text-red-500 mt-2 select-none">{error}</p>}
-        <Button className="w-full mt-6 flex items-center justify-center gap-2">Sign in {isLOggingIn ? <Spinner size="5" /> : ''}</Button>
+        {isError && (
+          <p className="text-red-500 mt-2 select-none">
+            {error?.message || "fail to login"}
+          </p>
+        )}
+        <Button className="w-full mt-6 flex items-center justify-center gap-2">
+          Sign in {isPending ? <Spinner size="5" /> : ""}
+        </Button>
       </form>
       {/* <ButtonProvider provider="google" /> */}
     </>

@@ -15,33 +15,43 @@ import { FreeMode, Thumbs } from "swiper/modules";
 import type { Swiper as SwiperType } from "swiper";
 import Image from "next/image";
 import SwiperButton from "@/components/homePageComponents/heroSection/SwiperButton";
-import { useShopContext } from "@/context/ShopContext";
 import { Spinner } from "@/components/common";
 
 type Props = {
-  sale: number;
+  discountPercentage: number;
+  images: string[];
+  isNew?: boolean;
 };
 
-const ProductImagesSlide = ({ sale }: Props) => {
-  const { images } = useShopContext();
+const ProductImagesSlide = ({ discountPercentage, images, isNew }: Props) => {
   const [thumbsSwiper, setThumbsSwiper] = useState<SwiperType>();
+
+  useEffect(() => {
+    return () => {
+      setThumbsSwiper(undefined);
+    };
+  }, []);
 
   return (
     <>
       <div className="relative p-2 sm:p-8 bg-primary  aspect-square md:aspect-auto md:min-h-[512px]">
         <div className="absolute z-10">
-          <div className="bg-white w-20 mb-2 text-sm sm:text-lg text-text px-4 py-2 rounded-md font-bold">
-            NEW
-          </div>
-          <div
-            className={`bg-badge w-20 text-sm sm:text-lg text-second-text px-4 py-2 rounded-md font-bold ${
-              !sale && "opacity-0"
-            }`}
-          >
-            -{sale}%
-          </div>
+          {isNew && (
+            <div className="bg-white w-20 mb-2 text-sm sm:text-lg text-text px-4 py-2 rounded-md font-bold">
+              NEW
+            </div>
+          )}
+          {discountPercentage > 0 && (
+            <div
+              className={`bg-badge w-20 text-sm sm:text-lg text-second-text px-4 py-2 rounded-md font-bold ${
+                !discountPercentage && "opacity-0"
+              }`}
+            >
+              -{discountPercentage}%
+            </div>
+          )}
         </div>
-        {!images.length ? (
+        {!images?.length ? (
           <Spinner />
         ) : (
           <Swiper
@@ -54,7 +64,7 @@ const ProductImagesSlide = ({ sale }: Props) => {
             modules={[FreeMode, Thumbs]}
             className="select-none"
           >
-            {images?.map((image, index) => (
+            {images.map((image, index) => (
               <SwiperSlide key={index}>
                 <div className="relative aspect-square md:aspect-auto md:h-[512px]">
                   <Image src={image} alt="" fill className="object-contain" />
@@ -69,13 +79,13 @@ const ProductImagesSlide = ({ sale }: Props) => {
         <Swiper
           onSwiper={setThumbsSwiper}
           spaceBetween={24}
-          slidesPerView={3}
+          slidesPerView={5}
           freeMode={true}
           watchSlidesProgress={true}
           modules={[FreeMode, Thumbs]}
           className="select-none"
         >
-          {images?.map((image, index) => (
+          {images.map((image, index) => (
             <SwiperSlide key={index}>
               <div className="relative h-100 aspect-square">
                 <Image

@@ -8,16 +8,18 @@ import { discountCalc } from "@/lib/discountCalc";
 import Link from "next/link";
 import { useWishlistContext } from "@/context/WishlistContext";
 import { useCartContext } from "@/context/CartContext";
+import Spinner from "./loaders/Spinner";
 type Props = {
   data: IProduct;
 };
 
 const ProductCard = ({ data }: Props) => {
   const product = data;
-  const { wishlist, handleWishlist, wishlistStatus } = useWishlistContext();
+  const { wishlist, isLoadingWishlist, handleWishlist } = useWishlistContext();
   const { addToCart, cartStatus } = useCartContext();
-  const isFavorite = true;
-  // const isFavorite = wishlist.find((item) => item._id === data._id);
+  // const isFavorite = true;
+  const isFavorite =
+    !isLoadingWishlist && wishlist?.find((item) => item._id === data._id);
   const isNew =
     new Date(product.createdAt) >=
     new Date(new Date().setDate(new Date().getDate() - 14));
@@ -26,7 +28,7 @@ const ProductCard = ({ data }: Props) => {
       href={`/shop/${data._id}?name=${product.title}`}
       className="select-none block [&:hover_button]:opacity-100"
     >
-      <div className="bg-primary p-2 sm:p-4">
+      <div className={`bg-primary p-2 sm:p-4`}>
         <div className="flex justify-between items-center">
           <div className="flex gap-1 md:gap-2 items-center sm:flex-col">
             <div
@@ -50,14 +52,15 @@ const ProductCard = ({ data }: Props) => {
             className={`
               ${isFavorite ? "text-red-500" : "text-text"}
              cursor-pointer p-2 rounded-full aspect-square  shadow md:opacity-0 transition-all ${
-               wishlistStatus === "loading" && "cursor-not-allowed"
+               //  wishlistStatus === "loading" && "cursor-not-allowed"
+               ""
              }`}
             onClick={(e) => {
               e.preventDefault();
               handleWishlist(data._id);
             }}
           >
-            <FaRegHeart />
+           {isLoadingWishlist ? <Spinner size="6" /> : <FaRegHeart />}
           </button>
         </div>
         <div className="relative w-full aspect-[4/3] md:aspect-auto md:h-52">
@@ -70,15 +73,15 @@ const ProductCard = ({ data }: Props) => {
           />
         </div>
         <Button
-          className={`w-full mt-1 sm:mt-4 md:opacity-0 transition-all text-xs sm:text-lg ${
+          className={`w-full mt-1 flex justify-center gap-2 sm:mt-4 md:opacity-0 transition-all text-xs sm:text-lg ${
             cartStatus === "loading" && "cursor-not-allowed"
           }`}
           onClick={(e) => {
             e.preventDefault();
-            // addToCart(data._id, 1, "any");
+            addToCart(data._id, 1);
           }}
         >
-          Add to cart
+          Add to cart {cartStatus === "updating" && <Spinner size="4" />}
         </Button>
       </div>
       <div className="flex flex-col sm:gap-3 mt-3">

@@ -1,4 +1,5 @@
 "use client";
+import { useCartContext } from "@/context/CartContext";
 import React, { useState } from "react";
 import { PiMinus, PiPlus } from "react-icons/pi";
 
@@ -11,14 +12,17 @@ type Props = {
 
 const Counter = ({ max, min, initialValue = 1, onChange }: Props) => {
   const [count, setCount] = useState<number>(initialValue);
+  const { cartStatus } = useCartContext();
 
   const increment = () => {
+    if (cartStatus === "updating") return;
     if (count > min) {
       onChange(count - 1);
       setCount((p) => p - 1);
     }
   };
   const decrement = () => {
+    if (cartStatus === "updating") return;
     if (count < max) {
       onChange(count + 1);
       setCount((p) => p + 1);
