@@ -36,6 +36,22 @@ export const registerFormSchema = Yup.object().shape({
   ),
   accept: Yup.boolean().oneOf([true], "You must accept the terms"),
 });
+// forgot password form schema
+export const forgotPasswordSchema = Yup.object().shape({
+  email: Yup.string().email().required(),
+});
+// verify OTP form schema
+export const verifyOTPFormSchema = Yup.object().shape({
+  otp: Yup.string().required(),
+});
+// reset password form schema
+export const resetPasswordSchema = Yup.object().shape({
+  password: Yup.string().required(),
+  confirmPassword: Yup.string().oneOf(
+    [Yup.ref("password")],
+    "Passwords must match"
+  ),
+});
 // profile form schema
 export const profileFormSchema = Yup.object().shape({
   firstName: Yup.string().required(),

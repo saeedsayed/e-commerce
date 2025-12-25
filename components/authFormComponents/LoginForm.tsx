@@ -1,9 +1,8 @@
 "use client";
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import Input from "./Input";
 import { Button, Spinner } from "../common";
-import { set, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { loginFormSchema } from "@/utils/schemes";
 import { useMutation } from "@tanstack/react-query";
@@ -21,12 +20,12 @@ type formFields = {
 
 const LoginForm = () => {
   const { updateUser } = useAuthContext();
-  const router = useRouter()
+  const router = useRouter();
   const {
     register,
     handleSubmit,
     formState: { errors },
-    getValues
+    getValues,
   } = useForm({ resolver: yupResolver(loginFormSchema) });
   const { isPending, isError, error, mutate } = useMutation({
     mutationFn: async ({
@@ -52,7 +51,7 @@ const LoginForm = () => {
       setCookie("token", data.token, {
         maxAge: getValues("rememberMe") ? 7 * 24 * 60 * 60 : undefined,
       }); // 7 days in seconds
-      router.push("/")
+      router.push("/");
     },
     onError: (error: any) => {
       toast.error(error.message || "Login failed");
@@ -102,7 +101,9 @@ const LoginForm = () => {
             />
             Remember me
           </label>
-          <p className="font-bold cursor-not-allowed">Forgot Password?</p>
+          <Link href="/forgot-password" className="font-bold">
+            Forgot Password?
+          </Link>
         </div>
         {isError && (
           <p className="text-red-500 mt-2 select-none">

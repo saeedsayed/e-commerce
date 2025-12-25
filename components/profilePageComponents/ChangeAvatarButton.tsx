@@ -57,7 +57,9 @@ const ChangeAvatarButton = () => {
     <div className="relative mb-2 w-20 h-20">
       <Image
         src={
-          newAvatar ? URL.createObjectURL(newAvatar) : (user?.avatar as string || "/images/userAvatar.png")
+          newAvatar
+            ? URL.createObjectURL(newAvatar)
+            : (user?.avatar as string) || "/images/userAvatar.png"
         }
         fill
         className="rounded-full"
