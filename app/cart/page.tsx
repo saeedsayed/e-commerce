@@ -10,12 +10,12 @@ import { CartPageSk } from "@/components/common/loaders/skeletons";
 import { useCartContext } from "@/context/CartContext";
 
 const page = () => {
-  const { cartStatus } = useCartContext();
+  const { cartIsLoading, cartIsUpdating, cart } = useCartContext();
   return (
     <>
-      {cartStatus === "loading" && <CartPageSk />}
-      {cartStatus === "empty" && <EmptyCart />}
-      {(cartStatus === "done" || cartStatus === "updating") && (
+      {cartIsLoading && <CartPageSk />}
+      {cart.length === 0 && !cartIsLoading && <EmptyCart />}
+      {(cart.length > 0 || cartIsUpdating) && (
         <div className="flex gap-6 flex-col md:flex-row">
           <div className="md:w-7/12 lg:w-8/12">
             <CartTable />

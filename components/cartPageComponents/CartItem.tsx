@@ -2,7 +2,7 @@ import { ProductElement } from "@/types/cart.type";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
-import { Counter } from "../common";
+import { Counter, Spinner } from "../common";
 import { discountCalc } from "@/lib/discountCalc";
 import { IoMdClose } from "react-icons/io";
 import { useCartContext } from "@/context/CartContext";
@@ -13,7 +13,7 @@ type Props = {
 
 const CartItem = ({ data }: Props) => {
   const { quantity, product } = data;
-  const { removeFromCart, cartStatus, addToCart } = useCartContext();
+  const { removeFromCart, cartIsUpdating, addToCart } = useCartContext();
   const imgSrc = product.thumbnail;
   const productName = product.title;
   const productPrice = product.price;
@@ -43,7 +43,7 @@ const CartItem = ({ data }: Props) => {
         <div className="md:block hidden">
           <button
             className={`flex items-center gap-2 ${
-              cartStatus === "updating" ? "cursor-not-allowed" : ""
+              cartIsUpdating ? "cursor-not-allowed" : ""
             }`}
             onClick={(e) => {
               e.stopPropagation();
@@ -51,7 +51,7 @@ const CartItem = ({ data }: Props) => {
               removeFromCart(product._id);
             }}
           >
-            <IoMdClose /> Remove
+            {cartIsUpdating? <Spinner size="4" />:<IoMdClose />} Remove
           </button>
         </div>
       </div>

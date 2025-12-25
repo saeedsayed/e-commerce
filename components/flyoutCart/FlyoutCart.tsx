@@ -13,14 +13,14 @@ interface Props {
 }
 
 const FlyoutCart = ({ isOpen, handleClose }: Props) => {
-  const { cart, cartStatus, totalCartPrice } = useCartContext();
+  const { cart, totalCartPrice } = useCartContext();
   return (
     <Flyout position="right" isOpen={isOpen} handleClose={handleClose}>
       <div className="flex items-center justify-between">
         <h4 className="text-[28px] font-medium mb-4">Cart</h4>
         <button className="w-6 h-6 flex items-center justify-center text-3xl" onClick={handleClose}><IoClose /></button>
       </div>
-      {cartStatus === "empty" && <div onClick={handleClose}><EmptyCart /></div> }
+      {cart?.length === 0 && <div onClick={handleClose}><EmptyCart /></div> }
       {cart.length > 0 && (
         <div className="flex flex-col justify-between min-h-[90%]">
           <ul
@@ -33,10 +33,10 @@ const FlyoutCart = ({ isOpen, handleClose }: Props) => {
           </ul>
           <div>
             <p className="py-3 font-normal border-b flex">
-              SubTotal: <span className="ms-auto font-semibold">${totalCartPrice?.subTotal}</span>
+              SubTotal: <span className="ms-auto font-semibold">${totalCartPrice}</span>
             </p>
             <p className="text-xl py-3 font-medium flex">
-              Total: <span className="ms-auto">${totalCartPrice?.total}</span>
+              Total: <span className="ms-auto">${totalCartPrice}</span>
             </p>
             <Button className="my-4 w-full">
               <Link href={"/cart/checkout"} className="block" onClick={handleClose}>

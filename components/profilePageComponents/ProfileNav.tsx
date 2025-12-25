@@ -5,11 +5,18 @@ import { PROFILE_LINKS } from "@/constants/index";
 import { Button } from "../common";
 import ChangeAvatarButton from "./ChangeAvatarButton";
 import { useAuthContext } from "@/context/AuthContext";
+import { deleteCookie } from "cookies-next";
 
 const ProfileNav = () => {
   const currentPath = usePathname();
   const router = useRouter();
-  const { user } = useAuthContext();
+  const { user, updateUser } = useAuthContext();
+  const handleLogout = () => {
+    router.push("/");
+    localStorage.removeItem("user");
+    deleteCookie("token");
+    updateUser(null);
+  };
   return (
     <div className="bg-primary px-4 py-10 h-fit">
       <div className="flex flex-col items-center mb-10">
@@ -47,10 +54,7 @@ const ProfileNav = () => {
           </option>
         ))}
       </select>
-      <Button
-        className="text-sub-text py-2 w-full mt-2"
-        onClick={() => {localStorage.removeItem("user"); router.push("/");}}
-      >
+      <Button className="text-sub-text py-2 w-full mt-2" onClick={handleLogout}>
         Logout
       </Button>
     </div>

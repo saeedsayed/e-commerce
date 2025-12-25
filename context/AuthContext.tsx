@@ -1,6 +1,6 @@
 "use client";
 import { IUser } from "@/types";
-import React, { createContext, useContext, useEffect } from "react";
+import React, { createContext, use, useContext, useEffect } from "react";
 import { deleteCookie, getCookie } from "cookies-next";
 
 type Props = {

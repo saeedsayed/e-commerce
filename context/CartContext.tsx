@@ -8,178 +8,144 @@ import {
 } from "react";
 import { toast } from "react-hot-toast";
 import { ICart, ProductElement } from "@/types/cart.type";
-import {
-  Attributes as shippingMethod,
-  ShippingMethods,
-} from "@/types/shippingMethods";
 import { useRouter } from "next/navigation";
 import { useAuthContext } from "./AuthContext";
 import { axiosInstance } from "@/lib/axios";
+import { IProduct } from "@/types/product.type";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { IShippingMethod } from "@/types";
 
 // types
 interface ICartContext {
   cart: ProductElement[];
-  cartStatus: "loading" | "done" | "empty" | "updating";
-  addToCart: (
-    productId: string,
-    quantity: number
-    // color: string
-  ) => Promise<void>;
+  cartIsLoading: boolean;
+  cartIsUpdating: boolean;
+  addToCart: (productId: string, quantity: number) => Promise<void>;
   removeFromCart: (productId: string) => Promise<void>;
-  shippingMethods: ShippingMethods[];
-  selectedShippingMethod: shippingMethod;
-  setSelectedShippingMethod: (method: shippingMethod) => void;
-  totalCartPrice: { subTotal: number; total: number } | undefined;
+  shippingMethods: IShippingMethod[];
+  selectedShippingMethod: IShippingMethod;
+  setSelectedShippingMethod: (method: IShippingMethod) => void;
+  totalCartPrice: number;
 }
 
 // create context
 const CartContext = createContext<ICartContext>({
   cart: [],
-  cartStatus: "loading",
+  cartIsLoading: true,
+  cartIsUpdating: false,
   addToCart: async () => {},
   removeFromCart: async () => {},
   shippingMethods: [],
-  selectedShippingMethod: {
-    methodName: "Free shipping",
-    increases: 0,
-    typeIncrease: "increases",
-  },
+  selectedShippingMethod: {} as IShippingMethod,
   setSelectedShippingMethod: () => {},
-  totalCartPrice: { subTotal: 0, total: 0 },
+  totalCartPrice: 0,
 });
 
 // component
 const CartProvider = ({ children }: { readonly children: ReactNode }) => {
-  // states
-  const [cart, setCart] = useState<ProductElement[]>([]);
-  const [cartStatus, setCartStatus] = useState<
-    "loading" | "done" | "empty" | "updating"
-  >("loading");
-  const [shippingMethods, setShippingMethods] = useState<ShippingMethods[]>([]);
   const [selectedShippingMethod, setSelectedShippingMethod] =
-    useState<shippingMethod>({
-      methodName: "Free shipping",
-      increases: 0,
-      typeIncrease: "increases",
-    });
-  const [totalCartPrice, setTotalCartPrice] = useState<{
-    subTotal: number;
-    total: number;
-  }>();
-  // get session client side
-  const { user, status } = useAuthContext();
-  const router = useRouter();
-
-  // add to cart function
-  const addToCart = async (
-    productId: string,
-    quantity: number
-    // color: string
-  ) => {
-    if (status === "unauthenticated") {
-      toast.error("Please login first");
-      router.push("/login");
-      return;
+    useState<IShippingMethod>({} as IShippingMethod);
+  const { status } = useAuthContext();
+  // fetch cart data
+  const { data, isLoading, refetch } = useQuery({
+    queryKey: ["cart"],
+    queryFn: async () => {
+      if (status !== "authenticated") return [];
+      const { data } = await axiosInstance<{
+        data: { products: ProductElement[]; totalPrice: number };
+      }>("cart");
+      return data.data;
+    },
+  });
+  // fetch shipping methods data
+  const { data: shippingMethods, isLoading: shippingMethodsLoading } = useQuery(
+    {
+      queryKey: ["shippingMethods"],
+      queryFn: async () => {
+        const { data } = await axiosInstance<{
+          data: IShippingMethod[];
+        }>("shipping");
+        if (data.data.length > 0 && !localStorage.getItem("shipping_method")) {
+          setSelectedShippingMethod(data.data[0]);
+        } else if (
+          data.data.length > 0 &&
+          localStorage.getItem("shipping_method")
+        ) {
+          const methodName = localStorage.getItem("shipping_method");
+          const method = data.data.find((m) => m.name === methodName);
+          setSelectedShippingMethod(method as IShippingMethod);
+        }
+        return data.data;
+      },
     }
-    if (cartStatus === "loading" || cartStatus === "updating") {
-      toast.error("Please wait...");
-      return;
-    }
-    setCartStatus("updating");
-    const { data: newCartData } = await axiosInstance.post<{
-      data: ICart;
-      message: string;
-    }>("/cart", {
+  );
+  //   add to cart
+  const { isPending: handling, mutate: handleCart } = useMutation({
+    mutationFn: async ({
       productId,
       quantity,
-    });
-    //
-    setCartStatus("done");
-    setTotalCartPrice({
-      subTotal: newCartData.data.totalPrice,
-      total: newCartData.data.totalPrice,
-    });
-    setCart(newCartData.data.products);
-    toast.success(newCartData.message);
-  };
+    }: {
+      productId: string;
+      quantity: number;
+    }) => {
+      if (handling) throw new Error("Already handling request");
+      if (quantity <= 0) {
+        const { data } = await axiosInstance.delete<{ message: string }>(
+          `cart`,
+          { data: { productId } }
+        );
+        return data;
+      } else {
+        const { data } = await axiosInstance.post<{ message: string }>(`cart`, {
+          productId,
+          quantity,
+        });
+        return data;
+      }
+    },
+    onSuccess: (data) => {
+      toast.success(data.message);
+      refetch();
+    },
+    onError: (error: any) => {
+      toast.error(
+        error.response?.data?.message || error.message || "Something went wrong"
+      );
+    },
+  });
 
-  // remove from cart function
-  const removeFromCart = async (productId: string) => {
-    if (cartStatus === "loading" || cartStatus === "updating") {
-      toast.error("Please wait...");
-      return;
-    }
-    setCartStatus("updating");
-    const { data: newCartData } = await axiosInstance.delete<{
-      data: ICart;
-      message: string;
-    }>("/cart", {
-      data: { productId },
-    });
-    setCartStatus(newCartData.data.products.length > 0 ? "done" : "empty");
-    setCart(newCartData.data.products);
-  };
-  // make cart empty
-  // const makeCartEmpty = async () => {
-  //   const { newCartData, newCartStatus } = await emptyTheCart(
-  //     user?.cart as string
-  //   );
-  //   setCart(newCartData);
-  //   setCartStatus(newCartStatus);
-  // };
-
-  // get cart
   useEffect(() => {
     if (status === "authenticated") {
-      (async () => {
-        // get cart from api first time when user is authenticated
-        setCartStatus("loading");
-        const { data: cartData } = await axiosInstance<{ data: ICart }>(
-          "/cart"
-        );
-        // setShippingMethods(shippingMethods);
-        // setSelectedShippingMethod(shippingMethods[0].attributes);
-        setCart(cartData?.data?.products);
-        setCartStatus(cartData?.data?.products?.length > 0 ? "done" : "empty");
-        setTotalCartPrice({
-          subTotal: cartData.data.totalPrice,
-          total: cartData.data.totalPrice,
-        });
-      })();
-    } else if (status === "unauthenticated") {
-      setCart([]);
-      setCartStatus("empty");
-      setShippingMethods([]);
-      setSelectedShippingMethod({
-        methodName: "Free shipping",
-        increases: 0,
-        typeIncrease: "increases",
-      });
-      setTotalCartPrice({ subTotal: 0, total: 0 });
-      return;
+      refetch();
     }
   }, [status]);
-
-  useEffect(() => {
-    if (cartStatus === "updating" || cartStatus === "loading") {
-      document.body.style = "cursor: wait;";
-    } else {
-      document.body.style = "cursor: default;";
-    }
-  }, [cartStatus]);
 
   return (
     <CartContext.Provider
       value={{
-        cart,
-        cartStatus,
-        addToCart,
-        removeFromCart,
+        cart: (data && typeof data === "object" && "products" in data
+          ? data.products
+          : []) as ProductElement[],
+        cartIsLoading: isLoading,
+        cartIsUpdating: handling,
+        addToCart: async (productId: string, quantity: number) => {
+          return handleCart({ productId, quantity });
+        },
+        removeFromCart: async (productId: string) => {
+          return handleCart({ productId, quantity: 0 });
+        },
         // makeCartEmpty,
-        shippingMethods,
+        shippingMethods: shippingMethods || [],
         selectedShippingMethod,
-        setSelectedShippingMethod,
-        totalCartPrice,
+        setSelectedShippingMethod: (method: IShippingMethod) => {
+          setSelectedShippingMethod(method);
+          localStorage.setItem("shipping_method", method.name);
+        },
+        totalCartPrice: (data &&
+        typeof data === "object" &&
+        "totalPrice" in data
+          ? data.totalPrice
+          : 0) as number,
       }}
     >
       {children}

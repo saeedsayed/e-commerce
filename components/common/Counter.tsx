@@ -1,7 +1,8 @@
 "use client";
 import { useCartContext } from "@/context/CartContext";
-import React, { useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { PiMinus, PiPlus } from "react-icons/pi";
+import Spinner from "./loaders/Spinner";
 
 type Props = {
   max: number;
@@ -12,22 +13,32 @@ type Props = {
 
 const Counter = ({ max, min, initialValue = 1, onChange }: Props) => {
   const [count, setCount] = useState<number>(initialValue);
-  const { cartStatus } = useCartContext();
+  const { cartIsUpdating } = useCartContext();
+  const [action, setAction] = useState<"incrementing" | "decrementing" | null>(
+    null
+  );
 
   const increment = () => {
-    if (cartStatus === "updating") return;
+    if (cartIsUpdating) return;
     if (count > min) {
+      setAction("incrementing");
       onChange(count - 1);
       setCount((p) => p - 1);
     }
   };
   const decrement = () => {
-    if (cartStatus === "updating") return;
+    if (cartIsUpdating) return;
     if (count < max) {
+      setAction("decrementing");
       onChange(count + 1);
       setCount((p) => p + 1);
     }
   };
+  useEffect(() => {
+    if (!cartIsUpdating ) {
+      setAction(null);
+    }
+  }, [cartIsUpdating]);
   return (
     <div
       className="flex items-center border border-sub-text rounded-lg w-fit"
@@ -37,11 +48,11 @@ const Counter = ({ max, min, initialValue = 1, onChange }: Props) => {
       }}
     >
       <button type="button" className="p-3" onClick={increment}>
-        <PiMinus />
+        {action === "incrementing" ? <Spinner size="4" /> : <PiMinus />}
       </button>
       <p className="px-3 text-center">{count}</p>
       <button type="button" className="p-3" onClick={decrement}>
-        <PiPlus />
+        {action === "decrementing" ? <Spinner size="4" /> : <PiPlus />}
       </button>
     </div>
   );

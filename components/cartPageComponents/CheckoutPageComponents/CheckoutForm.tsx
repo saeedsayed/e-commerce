@@ -40,13 +40,13 @@ const CheckoutForm = () => {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ amount: +(totalCartPrice?.total as number * 100).toFixed(0) }),
+            body: JSON.stringify({ amount: +(totalCartPrice as number * 100).toFixed(0) }),
         })
         const { clientSecret } = await res.json();
         // set client secret and buyer info and shipping method in local storage
         localStorage.setItem('client_secret', clientSecret);
         localStorage.setItem('buyerInfo', JSON.stringify(event));
-        localStorage.setItem('shipping_method', selectedShippingMethod.methodName);
+        localStorage.setItem('shipping_method', selectedShippingMethod.name);
         const { error } = await stripe.confirmPayment({
             clientSecret,
             elements,

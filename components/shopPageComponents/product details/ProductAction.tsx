@@ -12,7 +12,7 @@ type Props = {
 };
 
 const ProductAction = ({ id, stock }: Props) => {
-  const { addToCart, cartStatus } = useCartContext();
+  const { addToCart, cartIsUpdating } = useCartContext();
   const { wishlist, handleWishlist, isLoadingWishlist } = useWishlistContext();
   const [count, setCount] = useState<number>(1);
   const isFavorite = !!wishlist?.find((item) => item._id === id);
@@ -41,7 +41,7 @@ const ProductAction = ({ id, stock }: Props) => {
         className="flex justify-center gap-3 w-full py-3"
         onClick={handleAddToCart}
       >
-        Add to cart {cartStatus === "updating" && <Spinner size="5" />}
+        Add to cart {cartIsUpdating && <Spinner size="5" />}
       </Button>
     </div>
   );

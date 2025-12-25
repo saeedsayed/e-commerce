@@ -1,10 +1,11 @@
 "use client";
-import { createContext, ReactNode, useContext } from "react";
+import { createContext, ReactNode, useContext, useEffect } from "react";
 import { toast } from "react-hot-toast";
 
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { axiosInstance } from "@/lib/axios";
 import { IProduct } from "@/types";
+import { useAuthContext } from "./AuthContext";
 
 // types
 interface IWishlistContext {
@@ -21,12 +22,14 @@ const WishlistContext = createContext<IWishlistContext>({
 });
 
 const WishlistProvider = ({ children }: { readonly children: ReactNode }) => {
+  const {status}=useAuthContext()
   // fetch wishlist data
   const { data, isLoading, refetch } = useQuery({
     queryKey: ["wishlist"],
     queryFn: async () => {
-      const { data } = await axiosInstance<{ data: IProduct[] }>("wishlist");
-      return data.data;
+      if(status!=="authenticated") return []
+      const { data } = await axiosInstance<{ data:{products: IProduct[]} }>("wishlist");
+      return data.data.products;
     },
   });
   //   add to wishlist
@@ -57,7 +60,10 @@ const WishlistProvider = ({ children }: { readonly children: ReactNode }) => {
       );
     },
   });
-
+  useEffect(()=>{
+    if(status==="authenticated"){
+      refetch()
+    }},[status])
   return (
     <WishlistContext.Provider
       value={{

@@ -14,7 +14,7 @@ import { FaRegHeart } from "react-icons/fa6";
 import { FiShoppingBag } from "react-icons/fi";
 
 const NavIcons = () => {
-  const { cart, cartStatus } = useCartContext();
+  const { cart, cartIsLoading } = useCartContext();
   const { wishlist, isLoadingWishlist } = useWishlistContext();
   const cartItemCount = cart?.length;
   const wishlistItemCount = wishlist?.length;
@@ -30,20 +30,15 @@ const NavIcons = () => {
       </a>
       {status === "loading" && <Dots />}
       {status === "authenticated" && (
-        <Link href={"/profile"}>
-          <BsPerson className="w-6 h-6" />
-        </Link>
-      )}
-      {status === "unauthenticated" && (
-        <Link href={"/login"}>
-          <Button className="py-1 px-1 text-sm">sign in</Button>
-        </Link>
-      )}
-      {status === "authenticated" && (
         <>
+          <Link href={"/profile"} title="profile">
+            <BsPerson className="w-6 h-6" />
+          </Link>
+
           <Link
             href={"/profile/wishlist"}
             className="flex items-center gap-[5px] cursor-pointer"
+            title="wishlist"
           >
             <FaRegHeart className="w-6 h-6" />
             {isLoadingWishlist ? (
@@ -60,9 +55,10 @@ const NavIcons = () => {
           <div
             className="flex items-center gap-[1px] cursor-pointer"
             onClick={handleCartOpen}
+            title="cart"
           >
             <FiShoppingBag className="w-6 h-6" />
-            {cartStatus === "loading" ? (
+            {cartIsLoading ? (
               <div className="relative w-5 h-5">
                 <Spinner size="4" />
               </div>
@@ -73,6 +69,11 @@ const NavIcons = () => {
             )}
           </div>
         </>
+      )}
+      {status === "unauthenticated" && (
+        <Link href={"/login"}>
+          <Button className="py-1 px-1 text-sm">sign in</Button>
+        </Link>
       )}
       <FlyoutCart isOpen={cartIsOpen} handleClose={handleCartOpen} />
     </div>

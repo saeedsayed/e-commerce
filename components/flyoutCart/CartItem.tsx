@@ -13,7 +13,7 @@ interface Props {
 
 const CartItem = ({ data }: Props) => {
   const { quantity, product } = data;
-  const { removeFromCart, cartStatus, addToCart } = useCartContext();
+  const { removeFromCart, cartIsUpdating, addToCart } = useCartContext();
   const imgSrc = product.thumbnail;
   const productName = product.title;
   const productPrice = product.price;
@@ -49,7 +49,7 @@ const CartItem = ({ data }: Props) => {
               removeFromCart(product._id);
             }}
           >
-            {cartStatus === "updating" ? <Spinner size="4" /> : <IoMdClose />}
+            {cartIsUpdating ? <Spinner size="4" /> : <IoMdClose />}
           </button>
         </div>
       </Link>

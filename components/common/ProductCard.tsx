@@ -9,6 +9,7 @@ import Link from "next/link";
 import { useWishlistContext } from "@/context/WishlistContext";
 import { useCartContext } from "@/context/CartContext";
 import Spinner from "./loaders/Spinner";
+import { FaHeart } from "react-icons/fa6";
 type Props = {
   data: IProduct;
 };
@@ -16,7 +17,7 @@ type Props = {
 const ProductCard = ({ data }: Props) => {
   const product = data;
   const { wishlist, isLoadingWishlist, handleWishlist } = useWishlistContext();
-  const { addToCart, cartStatus } = useCartContext();
+  const { addToCart, cartIsUpdating, cartIsLoading } = useCartContext();
   // const isFavorite = true;
   const isFavorite =
     !isLoadingWishlist && wishlist?.find((item) => item._id === data._id);
@@ -50,8 +51,8 @@ const ProductCard = ({ data }: Props) => {
           </div>
           <button
             className={`
-              ${isFavorite ? "text-red-500" : "text-text"}
-             cursor-pointer p-2 rounded-full aspect-square  shadow md:opacity-0 transition-all ${
+              ${isFavorite ? "text-red-500" : "text-text md:opacity-0"}
+             cursor-pointer p-2 rounded-full aspect-square  shadow transition-all ${
                //  wishlistStatus === "loading" && "cursor-not-allowed"
                ""
              }`}
@@ -60,7 +61,13 @@ const ProductCard = ({ data }: Props) => {
               handleWishlist(data._id);
             }}
           >
-           {isLoadingWishlist ? <Spinner size="6" /> : <FaRegHeart />}
+            {isLoadingWishlist ? (
+              <Spinner size="6" />
+            ) : isFavorite ? (
+              <FaHeart />
+            ) : (
+              <FaRegHeart />
+            )}
           </button>
         </div>
         <div className="relative w-full aspect-[4/3] md:aspect-auto md:h-52">
@@ -74,14 +81,14 @@ const ProductCard = ({ data }: Props) => {
         </div>
         <Button
           className={`w-full mt-1 flex justify-center gap-2 sm:mt-4 md:opacity-0 transition-all text-xs sm:text-lg ${
-            cartStatus === "loading" && "cursor-not-allowed"
+            cartIsLoading && "cursor-not-allowed"
           }`}
           onClick={(e) => {
             e.preventDefault();
             addToCart(data._id, 1);
           }}
         >
-          Add to cart {cartStatus === "updating" && <Spinner size="4" />}
+          Add to cart {cartIsUpdating && <Spinner size="4" />}
         </Button>
       </div>
       <div className="flex flex-col sm:gap-3 mt-3">
