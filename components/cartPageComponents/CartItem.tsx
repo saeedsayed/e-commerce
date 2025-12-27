@@ -1,4 +1,4 @@
-import { ProductElement } from "@/types/cart.type";
+import { ICartItem } from "@/types/cart.type";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
@@ -8,7 +8,7 @@ import { IoMdClose } from "react-icons/io";
 import { useCartContext } from "@/context/CartContext";
 
 type Props = {
-  data: ProductElement;
+  data: ICartItem;
 };
 
 const CartItem = ({ data }: Props) => {

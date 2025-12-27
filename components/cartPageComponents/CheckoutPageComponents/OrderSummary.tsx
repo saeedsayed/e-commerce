@@ -22,10 +22,10 @@ const OrderSummary = () => {
         Shipping <span>${selectedShippingMethod.cost}</span>
       </p>
       <p className="text-lg flex justify-between py-3 border-b">
-        Subtotal: <span>${totalCartPrice}</span>
+        Subtotal: <span>${totalCartPrice.subTotal}</span>
       </p>
       <p className="text-xl font-semibold flex justify-between pt-3">
-        Total: <span>${totalCartPrice + selectedShippingMethod.cost}</span>
+        Total: <span>${totalCartPrice.total}</span>
       </p>
     </CardBody>
   );

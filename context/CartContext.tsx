@@ -7,25 +7,33 @@ import {
   useState,
 } from "react";
 import { toast } from "react-hot-toast";
-import { ICart, ProductElement } from "@/types/cart.type";
-import { useRouter } from "next/navigation";
+import { ICartItem } from "@/types/cart.type";
 import { useAuthContext } from "./AuthContext";
 import { axiosInstance } from "@/lib/axios";
-import { IProduct } from "@/types/product.type";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { IShippingMethod } from "@/types";
+import {
+  UseMutateFunction,
+  useMutation,
+  useQuery,
+} from "@tanstack/react-query";
+import { ICoupon, IShippingMethod } from "@/types";
 
 // types
 interface ICartContext {
-  cart: ProductElement[];
+  cart: ICartItem[];
   cartIsLoading: boolean;
   cartIsUpdating: boolean;
+  shippingMethodsLoading: boolean;
   addToCart: (productId: string, quantity: number) => Promise<void>;
   removeFromCart: (productId: string) => Promise<void>;
   shippingMethods: IShippingMethod[];
   selectedShippingMethod: IShippingMethod;
   setSelectedShippingMethod: (method: IShippingMethod) => void;
-  totalCartPrice: number;
+  totalCartPrice: { subTotal: number; total: number };
+  applyCoupon: UseMutateFunction<{ data: ICoupon }, any, string, unknown>;
+  removeCoupon: () => void;
+  applyingCoupon: boolean;
+  coupon: ICoupon | null;
+  couponError: Error | null;
 }
 
 // create context
@@ -33,18 +41,35 @@ const CartContext = createContext<ICartContext>({
   cart: [],
   cartIsLoading: true,
   cartIsUpdating: false,
+  shippingMethodsLoading: true,
   addToCart: async () => {},
   removeFromCart: async () => {},
   shippingMethods: [],
   selectedShippingMethod: {} as IShippingMethod,
   setSelectedShippingMethod: () => {},
-  totalCartPrice: 0,
+  totalCartPrice: { subTotal: 0, total: 0 },
+  applyCoupon: () => {},
+  removeCoupon: () => {},
+  applyingCoupon: false,
+  coupon: null,
+  couponError: null,
 });
+
+const calculateCartAmount = (
+  coupon: ICoupon,
+  productsAmount: number,
+  shippingMethod: IShippingMethod
+) => {
+  const subTotal = productsAmount;
+  const total = subTotal - (coupon?.discount || 0) + shippingMethod.cost;
+  return { subTotal, total };
+};
 
 // component
 const CartProvider = ({ children }: { readonly children: ReactNode }) => {
   const [selectedShippingMethod, setSelectedShippingMethod] =
     useState<IShippingMethod>({} as IShippingMethod);
+  const [coupon, setCoupon] = useState<ICoupon | null>();
   const { status } = useAuthContext();
   // fetch cart data
   const { data, isLoading, refetch } = useQuery({
@@ -52,7 +77,7 @@ const CartProvider = ({ children }: { readonly children: ReactNode }) => {
     queryFn: async () => {
       if (status !== "authenticated") return [];
       const { data } = await axiosInstance<{
-        data: { products: ProductElement[]; totalPrice: number };
+        data: { products: ICartItem[]; totalPrice: number };
       }>("cart");
       return data.data;
     },
@@ -79,6 +104,10 @@ const CartProvider = ({ children }: { readonly children: ReactNode }) => {
       },
     }
   );
+  const handleSelectedShippingMethod = (method: IShippingMethod) => {
+    setSelectedShippingMethod(method);
+    localStorage.setItem("shipping_method", method.name);
+  };
   //   add to cart
   const { isPending: handling, mutate: handleCart } = useMutation({
     mutationFn: async ({
@@ -114,6 +143,41 @@ const CartProvider = ({ children }: { readonly children: ReactNode }) => {
     },
   });
 
+  const removeFromCart = async (productId: string) => {
+    return handleCart({ productId, quantity: 0 });
+  };
+  const addToCart = async (productId: string, quantity: number) => {
+    return handleCart({ productId, quantity });
+  };
+  // apply coupon
+
+  const {
+    isPending: applyingCoupon,
+    error: couponError,
+    mutate: applyCoupon,
+  } = useMutation({
+    mutationFn: async (code: string) => {
+      if (!code.length) return { data: {} as ICoupon };
+      try {
+        const { data } = await axiosInstance<{ data: ICoupon }>(
+          `coupon/${code}`
+        );
+        return data;
+      } catch (err: any) {
+        throw new Error(err.response.data.message);
+      }
+    },
+    onSuccess: ({ data: coupon }) => {
+      setCoupon(coupon);
+    },
+    onError: (err: any) => {
+      toast.error(err?.message);
+      return err?.message;
+    },
+  });
+
+  const removeCoupon = () => setCoupon(null);
+
   useEffect(() => {
     if (status === "authenticated") {
       refetch();
@@ -125,27 +189,29 @@ const CartProvider = ({ children }: { readonly children: ReactNode }) => {
       value={{
         cart: (data && typeof data === "object" && "products" in data
           ? data.products
-          : []) as ProductElement[],
-        cartIsLoading: isLoading,
+          : []) as ICartItem[],
+        cartIsLoading: isLoading || status === "loading",
+        shippingMethodsLoading,
         cartIsUpdating: handling,
-        addToCart: async (productId: string, quantity: number) => {
-          return handleCart({ productId, quantity });
-        },
-        removeFromCart: async (productId: string) => {
-          return handleCart({ productId, quantity: 0 });
-        },
+        addToCart,
+        removeFromCart,
         // makeCartEmpty,
         shippingMethods: shippingMethods || [],
         selectedShippingMethod,
-        setSelectedShippingMethod: (method: IShippingMethod) => {
-          setSelectedShippingMethod(method);
-          localStorage.setItem("shipping_method", method.name);
-        },
-        totalCartPrice: (data &&
-        typeof data === "object" &&
-        "totalPrice" in data
-          ? data.totalPrice
-          : 0) as number,
+        setSelectedShippingMethod: handleSelectedShippingMethod,
+        totalCartPrice:
+          data && typeof data === "object" && "totalPrice" in data
+            ? calculateCartAmount(
+                coupon as ICoupon,
+                data.totalPrice,
+                selectedShippingMethod
+              )
+            : { total: 0, subTotal: 0 },
+        applyCoupon,
+        removeCoupon,
+        applyingCoupon,
+        coupon: coupon as ICoupon,
+        couponError,
       }}
     >
       {children}

@@ -33,10 +33,10 @@ const FlyoutCart = ({ isOpen, handleClose }: Props) => {
           </ul>
           <div>
             <p className="py-3 font-normal border-b flex">
-              SubTotal: <span className="ms-auto font-semibold">${totalCartPrice}</span>
+              SubTotal: <span className="ms-auto font-semibold">${totalCartPrice.subTotal}</span>
             </p>
             <p className="text-xl py-3 font-medium flex">
-              Total: <span className="ms-auto">${totalCartPrice}</span>
+              Total: <span className="ms-auto">${totalCartPrice.total}</span>
             </p>
             <Button className="my-4 w-full">
               <Link href={"/cart/checkout"} className="block" onClick={handleClose}>

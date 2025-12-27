@@ -21,8 +21,7 @@ const authProvider = createContext<IAuthContext>({
 
 const AuthProvider = ({ children }: Props) => {
   const [user, setUser] = React.useState<IUser | null>(null);
-  const [status, setStatus] =
-    React.useState<IAuthContext["status"]>("loading");
+  const [status, setStatus] = React.useState<IAuthContext["status"]>("loading");
 
   const updateUser = (newUser: IUser | null) => {
     if (newUser) {

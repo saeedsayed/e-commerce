@@ -4,7 +4,8 @@ import { IArticle } from "./article.type";
 import { IUser } from "./user.type";
 import { ICart } from "./cart.type";
 import { IShippingMethod } from "./shippingMethod.type";
-
+import { ICoupon } from "./coupon.type";
+export type {ICoupon}
 export type { ICart };
 export type { IUser };
 export type { ICategory };

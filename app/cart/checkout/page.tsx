@@ -6,7 +6,7 @@ import { Elements } from '@stripe/react-stripe-js';
 
 const page = () => {
   const { totalCartPrice, cartIsLoading } = useCartContext()
-  const amount = +(totalCartPrice as number * 100).toFixed(0) || 0
+  const amount = totalCartPrice.total
   return (
     <>
       {

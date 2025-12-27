@@ -8,6 +8,7 @@ import { axiosInstance } from "@/lib/axios";
 import { IProduct } from "@/types";
 import { Suspense } from "react";
 import Image from "next/image";
+import Pagination from "@/components/common/Pagination";
 
 const page = async ({
   searchParams,
@@ -79,6 +80,7 @@ const page = async ({
                 ))}
               </div>
             )}
+            <Pagination/>
           </Suspense>
         </div>
       </div>

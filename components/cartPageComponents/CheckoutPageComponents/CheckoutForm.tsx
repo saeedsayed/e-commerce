@@ -40,7 +40,7 @@ const CheckoutForm = () => {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ amount: +(totalCartPrice as number * 100).toFixed(0) }),
+            body: JSON.stringify({ amount: +(totalCartPrice.total * 100).toFixed(0) }),
         })
         const { clientSecret } = await res.json();
         // set client secret and buyer info and shipping method in local storage

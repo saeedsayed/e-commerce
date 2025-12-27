@@ -13,6 +13,7 @@ const CartSummary = (props: Props) => {
     selectedShippingMethod,
     setSelectedShippingMethod,
     totalCartPrice,
+    coupon,
   } = useCartContext();
   return (
     <div className="p-6 border rounded-md border-sub-text sticky top-0">
@@ -45,11 +46,17 @@ const CartSummary = (props: Props) => {
       </div>
       <div className="flex justify-between border-b py-3">
         <p className="">Subtotal</p>
-        <p className="">${totalCartPrice}</p>
+        <p className="">${totalCartPrice.subTotal}</p>
       </div>
+      {!!coupon && (
+        <div className="flex justify-between border-b py-3">
+          <p className="">coupon</p>
+          <p className="">-${coupon.discount}</p>
+        </div>
+      )}
       <div className="flex justify-between py-3">
         <p className="text-xl font-bold">Total</p>
-        <p className="text-xl font-bold">${totalCartPrice + (selectedShippingMethod?.cost || 0)}</p>
+        <p className="text-xl font-bold">${totalCartPrice.total}</p>
       </div>
       <Link href={"/cart/checkout"}>
         <Button className="w-full mt-10">Checkout</Button>
