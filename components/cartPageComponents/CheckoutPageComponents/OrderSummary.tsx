@@ -5,7 +5,7 @@ import { Button, Input } from "@/components/common";
 import { useCartContext } from "@/context/CartContext";
 
 const OrderSummary = () => {
-  const { cart, totalCartPrice, selectedShippingMethod } = useCartContext();
+  const { cart, totalCartPrice, selectedShippingMethod, coupon } = useCartContext();
   return (
     <CardBody>
       <h3 className="text-2xl font-medium mb-4">Order Summary</h3>
@@ -14,13 +14,18 @@ const OrderSummary = () => {
           <CartItem key={item.product._id} data={item} />
         ))}
       </ul>
-      <div className="flex items-center my-5 gap-3">
+      {/* <div className="flex items-center my-5 gap-3">
         <Input id="coupon" placeholder="Coupon" type="text" />
         <Button>Apply</Button>
-      </div>
+      </div> */}
       <p className="text-lg flex justify-between py-3 border-b">
         Shipping <span>${selectedShippingMethod.cost}</span>
       </p>
+        {coupon&&
+      <p className="text-lg flex justify-between py-3 border-b">
+        Coupon <span>-${coupon.discount}</span>
+      </p>
+      }
       <p className="text-lg flex justify-between py-3 border-b">
         Subtotal: <span>${totalCartPrice.subTotal}</span>
       </p>

@@ -1,11 +1,13 @@
-import { IProduct } from "./product.type";
+import { IProduct, IReviews } from "./product.type";
 import { ICategory } from "./category.type";
 import { IArticle } from "./article.type";
 import { IUser } from "./user.type";
 import { ICart } from "./cart.type";
 import { IShippingMethod } from "./shippingMethod.type";
 import { ICoupon } from "./coupon.type";
-export type {ICoupon}
+
+export type { IReviews };
+export type { ICoupon };
 export type { ICart };
 export type { IUser };
 export type { ICategory };

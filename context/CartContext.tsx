@@ -61,7 +61,7 @@ const calculateCartAmount = (
   shippingMethod: IShippingMethod
 ) => {
   const subTotal = productsAmount;
-  const total = subTotal - (coupon?.discount || 0) + shippingMethod.cost;
+  const total:number = +(subTotal - (coupon?.discount || 0) + shippingMethod.cost).toFixed(2);
   return { subTotal, total };
 };
 

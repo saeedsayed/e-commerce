@@ -10,6 +10,7 @@ import { useWishlistContext } from "@/context/WishlistContext";
 import { useCartContext } from "@/context/CartContext";
 import Spinner from "./loaders/Spinner";
 import { FaHeart } from "react-icons/fa6";
+import RatingStars from "./RatingStars";
 type Props = {
   data: IProduct;
 };
@@ -92,13 +93,7 @@ const ProductCard = ({ data }: Props) => {
         </Button>
       </div>
       <div className="flex flex-col sm:gap-3 mt-3">
-        <div className="flex">
-          {[...Array(product.rating || 4)].map((e, i) => (
-            <span className="text-yellow-500" key={i}>
-              <FaStar />
-            </span>
-          ))}
-        </div>
+        <RatingStars rating={product.rating || 0} />
         <h3 className="font-semibold">{product.title}</h3>
         <p className="font-semibold">
           ${discountCalc(product.price, product.discount).newPrice}{" "}

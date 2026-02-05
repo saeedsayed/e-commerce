@@ -23,7 +23,7 @@ const AccountDetailsForm = () => {
   });
   // handle submit change
   const onSubmit = async (data: { firstName: string; lastName: string }) => {
-    console.log("data", data);
+    // console.log("data", data);
     if (
       data.firstName.trim() === user?.fullName.split(" ")[0] &&
       data.lastName.trim() === user?.fullName.split(" ")[1]

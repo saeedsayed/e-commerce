@@ -4,10 +4,12 @@ import ProductImagesSlide from "@/components/shopPageComponents/product details/
 import RelatedProducts from "@/components/shopPageComponents/product details/RelatedProducts";
 import { axiosInstance } from "@/lib/axios";
 import { discountCalc } from "@/lib/discountCalc";
-import { IProduct } from "@/types";
+import { IProduct, IReviews } from "@/types";
 import Link from "next/link";
 import { FaStar } from "react-icons/fa";
 import VersionsOfProduct from "@/components/shopPageComponents/product details/VersionsOfProduct";
+import Reviews from "@/components/shopPageComponents/product details/Reviews";
+import RatingStars from "@/components/common/RatingStars";
 
 type Props = {
   params: {
@@ -16,15 +18,18 @@ type Props = {
 };
 
 const page = async ({ params }: Props) => {
-  const { slug } = await params;
+  const { slug: productId } = await params;
   const {
     data: { data: product },
-  } = await axiosInstance<{ data: IProduct }>(`products/${slug}`);
+  } = await axiosInstance<{ data: IProduct }>(`products/${productId}`);
   const {
     data: { data: relatedProducts },
   } = await axiosInstance<{ data: IProduct[] }>(
-    `products?category=${product.category[0]}&limit=6`
+    `products?category=${product.category[0]}&limit=6`,
   );
+  const {
+    data: { data: reviews },
+  } = await axiosInstance<{ data: IReviews[] }>(`review/${productId}`);
   const paths = [
     { name: "Home", path: "/" },
     { name: "Shop", path: "/shop" },
@@ -32,7 +37,7 @@ const page = async ({ params }: Props) => {
       name: product?.category[0] as string,
       path: `/shop?category=${product.category[0]}`,
     },
-    { name: product?.title, path: `/shop/${slug}` },
+    { name: product?.title, path: `/shop/${productId}` },
   ];
 
   const isNew =
@@ -55,14 +60,8 @@ const page = async ({ params }: Props) => {
         </div>
         <div className="flex-1">
           <div className="flex gap-[10px] items-center">
-            <div className="flex">
-              {/* stars rate */}
-              {[...Array(product?.rating)].map((e, i) => (
-                <span className="text-yellow-500" key={i}>
-                  <FaStar />
-                </span>
-              ))}
-            </div>
+            <RatingStars rating={product?.rating || 0} />
+
             <p className="text-xs">{product?.reviewsCount} Reviews</p>
           </div>
           {/* title */}
@@ -111,6 +110,7 @@ const page = async ({ params }: Props) => {
           </div>
         </div>
       </div>
+      <Reviews productId={productId} ratingAVG={product?.rating || 0} reviews={reviews} />
       {/* related products section */}
       <RelatedProducts data={relatedProducts} />
     </div>
