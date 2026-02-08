@@ -58,10 +58,14 @@ const CartContext = createContext<ICartContext>({
 const calculateCartAmount = (
   coupon: ICoupon,
   productsAmount: number,
-  shippingMethod: IShippingMethod
+  shippingMethod: IShippingMethod,
 ) => {
   const subTotal = productsAmount;
-  const total:number = +(subTotal - (coupon?.discount || 0) + shippingMethod.cost).toFixed(2);
+  const total: number = +(
+    subTotal -
+    (coupon?.discount || 0) +
+    shippingMethod.cost
+  ).toFixed(2);
   return { subTotal, total };
 };
 
@@ -102,7 +106,7 @@ const CartProvider = ({ children }: { readonly children: ReactNode }) => {
         }
         return data.data;
       },
-    }
+    },
   );
   const handleSelectedShippingMethod = (method: IShippingMethod) => {
     setSelectedShippingMethod(method);
@@ -121,7 +125,7 @@ const CartProvider = ({ children }: { readonly children: ReactNode }) => {
       if (quantity <= 0) {
         const { data } = await axiosInstance.delete<{ message: string }>(
           `cart`,
-          { data: { productId } }
+          { data: { productId } },
         );
         return data;
       } else {
@@ -138,7 +142,9 @@ const CartProvider = ({ children }: { readonly children: ReactNode }) => {
     },
     onError: (error: any) => {
       toast.error(
-        error.response?.data?.message || error.message || "Something went wrong"
+        error.response?.data?.message ||
+          error.message ||
+          "Something went wrong",
       );
     },
   });
@@ -160,7 +166,7 @@ const CartProvider = ({ children }: { readonly children: ReactNode }) => {
       if (!code.length) return { data: {} as ICoupon };
       try {
         const { data } = await axiosInstance<{ data: ICoupon }>(
-          `coupon/${code}`
+          `coupon/${code}`,
         );
         return data;
       } catch (err: any) {
@@ -169,6 +175,8 @@ const CartProvider = ({ children }: { readonly children: ReactNode }) => {
     },
     onSuccess: ({ data: coupon }) => {
       setCoupon(coupon);
+      toast.success("Coupon applied");
+      localStorage.setItem("coupon", JSON.stringify(coupon.coupon));
     },
     onError: (err: any) => {
       toast.error(err?.message);
@@ -176,13 +184,24 @@ const CartProvider = ({ children }: { readonly children: ReactNode }) => {
     },
   });
 
-  const removeCoupon = () => setCoupon(null);
+  const removeCoupon = () => {
+    setCoupon(null);
+    localStorage.removeItem("coupon");
+    toast.success("Coupon removed");
+  };
 
   useEffect(() => {
     if (status === "authenticated") {
       refetch();
     }
   }, [status]);
+
+  useEffect(() => {
+    const storedCoupon = JSON.parse(localStorage.getItem("coupon") || "null");
+    if (storedCoupon) {
+      applyCoupon(storedCoupon);
+    }
+  }, []);
 
   return (
     <CartContext.Provider
@@ -204,7 +223,7 @@ const CartProvider = ({ children }: { readonly children: ReactNode }) => {
             ? calculateCartAmount(
                 coupon as ICoupon,
                 data.totalPrice,
-                selectedShippingMethod
+                selectedShippingMethod,
               )
             : { total: 0, subTotal: 0 },
         applyCoupon,
