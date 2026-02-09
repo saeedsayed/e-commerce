@@ -2,12 +2,14 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { PROFILE_LINKS } from "@/constants/index";
-import { Button } from "../common";
+import { Button, Spinner } from "../common";
 import ChangeAvatarButton from "./ChangeAvatarButton";
 import { useAuthContext } from "@/context/AuthContext";
 import { deleteCookie } from "cookies-next";
+import { useState } from "react";
 
 const ProfileNav = () => {
+  const [IsOpenModal, setIsOpenModal] = useState(false);
   const currentPath = usePathname();
   const router = useRouter();
   const { user, updateUser } = useAuthContext();
@@ -54,11 +56,64 @@ const ProfileNav = () => {
           </option>
         ))}
       </select>
-      <Button className="text-sub-text py-2 w-full mt-2" onClick={handleLogout}>
+      <Button
+        className="text-sub-text py-2 w-full mt-2"
+        onClick={(_) => setIsOpenModal(true)}
+      >
         Logout
       </Button>
+      <LogoutModal
+        isOpen={IsOpenModal}
+        onClose={() => {
+          setIsOpenModal(false);
+        }}
+        handleLogout={handleLogout}
+      />
     </div>
   );
 };
 
 export default ProfileNav;
+
+type Props = {
+  isOpen: boolean;
+  onClose: () => void;
+  handleLogout: () => void;
+};
+
+function LogoutModal({ isOpen, onClose, handleLogout }: Props) {
+  if (!isOpen) return;
+  const [isLogingout, setIsLoginout] = useState(false);
+  return (
+    <div
+      className="fixed inset-0 bg-black bg-opacity-50 z-50"
+      onClick={onClose}
+    >
+      <div
+        className="bg-white p-6 rounded-md max-w-md mx-auto mt-20"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h3 className="text-lg font-medium mb-4">Delete Review</h3>
+        <p className="mb-4">Are you sure you want to delete this review?</p>
+        <div className="flex justify-end gap-4">
+          <button
+            className="px-4 py-2 bg-gray-200 rounded-md"
+            onClick={onClose}
+          >
+            Cancel
+          </button>
+          <button
+            className="px-4 py-2 bg-red-600 text-white rounded-md flex items-center gap-1"
+            onClick={(e) => {
+              setIsLoginout(true);
+              handleLogout();
+            }}
+            // disabled={isPending}
+          >
+            Logout {isLogingout && <Spinner size="4" />}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}

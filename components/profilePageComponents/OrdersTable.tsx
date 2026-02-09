@@ -1,10 +1,10 @@
 'use client';
-import { Order } from "@/types/order";
+import { IOrder } from "@/types";
 import React from "react";
 import { useRouter } from "next/navigation";
 
 interface Props {
-  data: Order[];
+  data: IOrder[];
 }
 
 const OrdersTable = ({ data }: Props) => {
@@ -29,18 +29,22 @@ const OrdersTable = ({ data }: Props) => {
         {/* Body */}
         <tbody className="divide-y divide-gray-200">
           {data.map((item) => (
-            <tr key={item.id} className="cursor-pointer" onClick={() => router.push(`/orders/${item.id}`)}>
+            <tr key={item._id} className="cursor-pointer" onClick={() => router.push(`/orders/${item._id}`)}>
               <td className="whitespace-nowrap text-text text-sm py-6 font-normal">
-                #{item.id}
+                #{item._id}
               </td>
               <td className="whitespace-nowrap text-text text-sm py-6 font-normal">
-                {item.attributes.createdAt.slice(0, 10)}
+                 {new Date(item?.createdAt).toLocaleDateString("en-US", {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })}
               </td>
               <td className="whitespace-nowrap text-text text-sm py-6 font-normal">
-                {item.attributes.status}
+                {item.status}
               </td>
               <td className="whitespace-nowrap text-text text-sm py-6 font-normal">
-                ${item.attributes.total}
+                ${item.pricing.total}
               </td>
             </tr>
           ))}

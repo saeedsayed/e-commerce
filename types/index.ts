@@ -5,6 +5,7 @@ import { IUser } from "./user.type";
 import { ICart } from "./cart.type";
 import { IShippingMethod } from "./shippingMethod.type";
 import { ICoupon } from "./coupon.type";
+import { IOrder } from "./order";
 
 export type { IReviews };
 export type { ICoupon };
@@ -14,3 +15,4 @@ export type { ICategory };
 export type { IProduct };
 export type { IShippingMethod };
 export type { IArticle };
+export type { IOrder };

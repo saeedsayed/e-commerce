@@ -8,11 +8,11 @@ const PageHeader = () => {
     const path = usePathname();
     const currentStep = CHECKOUT_STEPS.find((step) => step.path === path)?.step || 1;
     const themeColor = (step: number): { bg: string, text: string, borderColor: string } => {
-        if (step === currentStep) {
-            // if current page
+        if (step === currentStep && step !== CHECKOUT_STEPS.length) {
+            // if current page and not last page
             return { bg: "bg-black", text: "text-black", borderColor: "border-b-black" }
-        } else if (currentStep > step) {
-            // if previous page
+        } else if (currentStep > step || currentStep === CHECKOUT_STEPS.length) {
+            // if previous page or last page
             return { bg: "bg-[#38CB89]", text: "text-[#38CB89]", borderColor: "border-b-[#38CB89]" }
         }
         // if next page
@@ -36,7 +36,7 @@ const PageHeader = () => {
                             className={`w-10 h-10 sm:w-7 sm:h-7 md:w-10 md:h-10 rounded-full
                             text-white flex items-center justify-center ${themeColor(step.step).bg}`}
                         >
-                            {currentStep > step.step ? <FaCheck /> : step.step}
+                            {currentStep > step.step || currentStep === CHECKOUT_STEPS.length ? <FaCheck /> : step.step}
                         </span>
                         {step.name}
                     </li>

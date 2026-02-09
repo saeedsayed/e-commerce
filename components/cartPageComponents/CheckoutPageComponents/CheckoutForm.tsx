@@ -18,9 +18,10 @@ import { checkoutFormSchema } from "@/utils/schemes";
 
 type Props = {
   clientSecret: string;
+  orderId: string;
 };
 
-const CheckoutForm = ({ clientSecret }: Props) => {
+const CheckoutForm = ({ clientSecret, orderId }: Props) => {
   const stripe = useStripe();
   const elements = useElements();
   const [errorMessage, setErrorMessage] = useState<string>();
@@ -57,7 +58,7 @@ const CheckoutForm = ({ clientSecret }: Props) => {
       elements,
       confirmParams: {
         // return to checkout page after payment is successful
-        return_url: `${process.env.NEXT_PUBLIC_APP_URL}/cart/checkout/complete?client_id=${clientSecret}`,
+        return_url: `${process.env.NEXT_PUBLIC_APP_URL}/cart/checkout/complete?order_id=${orderId}`,
       },
     });
     if (error) {

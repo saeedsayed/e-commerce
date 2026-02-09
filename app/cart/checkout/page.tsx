@@ -17,6 +17,7 @@ const page = () => {
       const { data } = await axiosInstance.post<{
         data: {
           clientSecret: string;
+          orderId: string;
           total: number;
           subTotal: number;
           shipping: number;
@@ -43,7 +44,7 @@ const page = () => {
         >
           <div className="flex flex-col md:flex-row items-start gap-16">
             <div className="flex-1">
-              <CheckoutForm clientSecret={data?.clientSecret || ""} />
+              <CheckoutForm clientSecret={data?.clientSecret || ""} orderId={data?.orderId || ""} />
             </div>
             <div className="flex-1 max-w-[443px] mx-auto sticky top-20">
               <OrderSummary bill={data} />

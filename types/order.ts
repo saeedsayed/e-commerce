@@ -1,95 +1,107 @@
-export interface Order {
-    id: number;
-    attributes: OrderAttributes;
+export interface IOrder {
+  pricing: Pricing;
+  _id: string;
+  user: User;
+  items: Item[];
+  coupon: Coupon;
+  shippingMethod: ShippingMethod;
+  status:
+    | "pending_payment"
+    | "payment_failed"
+    | "processing"
+    | "Confirmed"
+    | "Shipped"
+    | "Delivered"
+    | "Cancelled"
+    | "Attempted delivery"
+    | "Refunded";
+  paymentIntentId: string;
+  createdAt: Date;
+  updatedAt: Date;
+  paidAt: Date;
+  cancelledAt: Date;
+  deliveredAt: Date;
+  paymentDetails: PaymentDetails;
 }
 
-export interface OrderAttributes {
-    createdAt: string;
-    updatedAt: string;
-    publishedAt: string;
-    shipping: string;
-    total: number;
-    status: "Placed"|"Confirmed"|"Shipped"|"Delivered"|"Cancelled"|"Attempted delivery"|"Refunded";
-    products: ProductElement[];
+export interface Coupon {
+  _id: string;
+  code: string;
+  description: string;
+  discountType: string;
+  discountValue: number;
+  minOrderAmount: number;
+  maxDiscountAmount: number;
+  startDate: Date;
+  endDate: Date;
+  usageLimit: number;
+  usedCount: number;
+  isActive: boolean;
 }
 
-export interface ProductElement {
-    id: number;
-    color: string;
-    count: number;
-    product: ProductProduct;
+export interface Item {
+  product: Product;
+  quantity: number;
 }
 
-export interface ProductProduct {
-    data: ProductData;
+export interface Product {
+  _id: string;
+  title: string;
+  price: number;
+  description: string;
+  thumbnail: string;
+  category: string[];
+  stock: number;
+  images: string[];
+  discount: number;
+  versions: Version[];
+  rating: number;
+  reviewsCount: number;
+  reviews: any[];
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-export interface ProductData {
-    id: number;
-    attributes: PurpleAttributes;
+export interface Version {
+  version: string;
+  versionName: string;
+  _id: string;
 }
 
-export interface PurpleAttributes {
-    name: string;
-    price: number;
-    sale: number;
-    stock: number;
-    description: string;
-    createdAt: string;
-    updatedAt: string;
-    publishedAt: string;
-    thumbnail: Thumbnail;
+export interface PaymentDetails {
+  method: string;
+  amount: number;
+  currency: string;
 }
 
-export interface Thumbnail {
-    data: ThumbnailData;
+export interface Pricing {
+  subTotal: number;
+  shipping: number;
+  discount: number;
+  total: number;
 }
 
-export interface ThumbnailData {
-    id: number;
-    attributes: FluffyAttributes;
+export interface ShippingMethod {
+  _id: string;
+  name: string;
+  description: string;
+  cost: number;
+  estimatedDeliveryDays: number;
+  isActive: boolean;
+  regions: string[];
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-export interface FluffyAttributes {
-    name: string;
-    alternativeText: null;
-    caption: null;
-    width: number;
-    height: number;
-    formats: Formats;
-    hash: string;
-    ext: string;
-    mime: string;
-    size: number;
-    url: string;
-    previewUrl: null;
-    provider: string;
-    provider_metadata: ProviderMetadata;
-    createdAt: string;
-    updatedAt: string;
-}
-
-export interface Formats {
-    small: Medium;
-    medium: Medium;
-    thumbnail: Medium;
-}
-
-export interface Medium {
-    ext: string;
-    url: string;
-    hash: string;
-    mime: string;
-    name: string;
-    path: null;
-    size: number;
-    width: number;
-    height: number;
-    sizeInBytes: number;
-    provider_metadata: ProviderMetadata;
-}
-
-export interface ProviderMetadata {
-    public_id: string;
-    resource_type: string;
+export interface User {
+  _id: string;
+  fullName: string;
+  email: string;
+  avatar: string;
+  isVerified: boolean;
+  role: string;
+  cart: string;
+  wishList: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
