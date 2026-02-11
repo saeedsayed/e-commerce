@@ -1,4 +1,4 @@
-export {default as AddressCard} from "./AddressCard"
+export {default as AddressCard} from "./addressesComponents/AddressCard"
 export {default as OrdersTable} from "./OrdersTable"
 export {default as OrderTableForSmallDevices} from "./OrderTableForSmallDevices"
 export {default as PagesTitle} from "./PagesTitle"

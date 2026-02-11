@@ -24,8 +24,8 @@ const ShippingAddressForm = ({ register, errors }: Props) => {
                 <Input id='state' label='State' placeholder='State'
                     register={register} err={!!errors.state} errMes={errors.state?.message} />
                 {/* ZIPCode */}
-                <Input id='ZIPCode' label='ZIP Code' placeholder='ZIP Code'
-                    register={register} err={!!errors.ZIPCode} errMes={errors.ZIPCode?.message} />
+                <Input id='postalCode' label='Postal Code' placeholder='Postal Code'
+                    register={register} err={!!errors.postalCode} errMes={errors.postalCode?.message} />
             </div>
         </div>
     )

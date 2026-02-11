@@ -16,8 +16,8 @@ const ContactInformationForm = ({ register, errors }: Props) => {
                 <Input id='lastName' label='Last Name' register={register}
                     err={!!errors.lastName} errMes={errors.lastName?.message} />
             </div>
-            <Input type='number' id='phoneNumber' label='Phone number' register={register}
-                err={!!errors.phoneNumber} errMes={errors.phoneNumber?.message} />
+            <Input type='number' id='phone' label='Phone number' register={register}
+                err={!!errors.phone} errMes={errors.phone?.message} />
             <Input id='email' label='Email address' register={register}
                 err={!!errors.email} errMes={errors.email?.message} />
         </div>

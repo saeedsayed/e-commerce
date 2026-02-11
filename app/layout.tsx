@@ -38,7 +38,7 @@ export default function RootLayout({
             <CartProvider>
               <NavBar />
               <Toaster
-                position="top-left"
+                position="bottom-center"
                 toastOptions={{
                   duration: 5000,
                   className: "text-xl sm:text-2xl font-semibold",
