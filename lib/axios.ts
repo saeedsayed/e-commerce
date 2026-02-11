@@ -1,6 +1,6 @@
 import axios from "axios";
 // import { getCookies } from "cookies-next";
-import { getCookie } from "cookies-next/client";
+import { getCookie, deleteCookie } from "cookies-next/client";
 import { getTokenFromCookies } from "./cookieServer";
 
 const baseURL = process.env.NEXT_PUBLIC_API_URL;
@@ -23,3 +23,20 @@ axiosInstance.interceptors.request.use(async (config) => {
   }
   return config;
 });
+
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    if (error.response?.status === 401) {
+      // Clear authentication data
+      if (typeof window !== "undefined") {
+        // Clear token from cookies
+        deleteCookie("token");
+        // Clear user from localStorage
+        localStorage.removeItem("user");
+        window.location.href = "/login";
+      }
+    }
+    return Promise.reject(error);
+  },
+);
