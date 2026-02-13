@@ -1,21 +1,16 @@
 "use client";
-import React, {
-  Dispatch,
-  MutableRefObject,
-  use,
-  useEffect,
-  useRef,
-} from "react";
+import React, { MutableRefObject, useEffect, useRef } from "react";
 import styles from "./sliderRange.module.css";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-const rangeToDefault = 800;
+const rangeToDefault = 10000;
+const stepsCount = 100;
 const SliderRange = () => {
   const range: number[] = [0, rangeToDefault];
   const [currentMinVal, setCurrentMinVal] = React.useState<number>(range[0]);
   const [currentMaxVal, setCurrentMaxVal] = React.useState<number>(range[1]);
   const progressBar = useRef() as MutableRefObject<HTMLDivElement>;
-  const steps = range[1] / 20;
+  const steps = +(range[1] / stepsCount).toFixed(0);
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -129,7 +124,7 @@ const SliderRange = () => {
         </label>
       </div>
 
-      <div className="relative h-2 select-none">
+      <div className="relative h-1 select-none">
         <div
           ref={progressBar}
           className={`absolute z-10 h-full bg-badge left-0 right-full`}

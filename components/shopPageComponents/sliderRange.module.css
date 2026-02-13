@@ -1,21 +1,21 @@
 .maxRangeInput,
 .minRangeInput {
-    width: 100%;
-    top: -5px;
-    position: absolute;
-    background:none;
-    -webkit-appearance: none;
-    pointer-events: none;
-    z-index: 30;
+  width: 100%;
+  top: calc(-50% - 5px);
+  position: absolute;
+  background: none;
+  -webkit-appearance: none;
+  pointer-events: none;
+  z-index: 30;
 }
 .maxRangeInput::-webkit-slider-thumb,
-.minRangeInput::-webkit-slider-thumb{
-    width: 17px;
-    height: 17px;
-    border-radius: 50%;
-    pointer-events: all;
-    -webkit-appearance: none;
-    background-color: var(--primary-color);
-    border:2px solid var(--badge-color);
-    cursor: pointer;
+.minRangeInput::-webkit-slider-thumb {
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  pointer-events: all;
+  -webkit-appearance: none;
+  background-color: var(--primary-color);
+  border: 2px solid var(--badge-color);
+  cursor: pointer;
 }

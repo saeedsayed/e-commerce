@@ -14,6 +14,7 @@ import {
   UseMutateFunction,
   useMutation,
   useQuery,
+  useQueryClient,
 } from "@tanstack/react-query";
 import { ICoupon, IShippingMethod } from "@/types";
 
@@ -75,6 +76,7 @@ const CartProvider = ({ children }: { readonly children: ReactNode }) => {
     useState<IShippingMethod>({} as IShippingMethod);
   const [coupon, setCoupon] = useState<ICoupon | null>();
   const { status } = useAuthContext();
+  const axiosClient = useQueryClient()
   // fetch cart data
   const { data, isLoading, refetch } = useQuery({
     queryKey: ["cart"],
@@ -138,7 +140,8 @@ const CartProvider = ({ children }: { readonly children: ReactNode }) => {
     },
     onSuccess: (data) => {
       toast.success(data.message);
-      refetch();
+      axiosClient.invalidateQueries({queryKey:["cart"]})
+      // refetch();
     },
     onError: (error: any) => {
       toast.error(

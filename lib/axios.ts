@@ -12,13 +12,15 @@ export const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(async (config) => {
   let token: string | undefined;
   if (typeof window === "undefined") {
+    // if api call from server side get token from request
     const tokenFromServer = await getTokenFromCookies();
     token = tokenFromServer;
   } else {
+    //if api call from client side get token from browser apis
     token = getCookie("token") as string;
   }
-  //  token = typeof window !== "undefined" ? getCookie("token");
   if (token && config.headers) {
+    //if has token send it for every api call
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;

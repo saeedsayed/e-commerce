@@ -15,11 +15,14 @@ const Counter = ({ max, min, initialValue = 1, onChange }: Props) => {
   const [count, setCount] = useState<number>(initialValue);
   const { cartIsUpdating } = useCartContext();
   const [action, setAction] = useState<"incrementing" | "decrementing" | null>(
-    null
+    null,
   );
 
   const increment = () => {
-    if (cartIsUpdating) return;
+    if (cartIsUpdating) {
+      setAction(null);
+      return;
+    }
     if (count > min) {
       setAction("incrementing");
       onChange(count - 1);
@@ -27,7 +30,10 @@ const Counter = ({ max, min, initialValue = 1, onChange }: Props) => {
     }
   };
   const decrement = () => {
-    if (cartIsUpdating) return;
+    if (cartIsUpdating) {
+      setAction(null);
+      return;
+    }
     if (count < max) {
       setAction("decrementing");
       onChange(count + 1);
@@ -35,7 +41,8 @@ const Counter = ({ max, min, initialValue = 1, onChange }: Props) => {
     }
   };
   useEffect(() => {
-    if (!cartIsUpdating ) {
+    console.log("cartIsUpdating", cartIsUpdating);
+    if (!cartIsUpdating) {
       setAction(null);
     }
   }, [cartIsUpdating]);
@@ -48,11 +55,19 @@ const Counter = ({ max, min, initialValue = 1, onChange }: Props) => {
       }}
     >
       <button type="button" className="p-3" onClick={increment}>
-        {action === "incrementing" ? <Spinner size="4" /> : <PiMinus />}
+        {action === "incrementing" && cartIsUpdating ? (
+          <Spinner size="4" />
+        ) : (
+          <PiMinus />
+        )}
       </button>
       <p className="px-3 text-center">{count}</p>
       <button type="button" className="p-3" onClick={decrement}>
-        {action === "decrementing" ? <Spinner size="4" /> : <PiPlus />}
+        {action === "decrementing" && cartIsUpdating ? (
+          <Spinner size="4" />
+        ) : (
+          <PiPlus />
+        )}
       </button>
     </div>
   );
