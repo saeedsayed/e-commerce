@@ -27,7 +27,7 @@ const page = () => {
       });
       return data.data;
     },
-    refetchOnMount: false,
+    // refetchOnMount: false,
     refetchOnWindowFocus: false,
     refetchIntervalInBackground: false,
     refetchInterval: false,
