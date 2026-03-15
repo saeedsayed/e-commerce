@@ -15,11 +15,10 @@ import ShippingAddressForm from "./ShippingAddressForm";
 import { checkoutFormSchema } from "@/utils/schemes";
 
 type Props = {
-  clientSecret: string;
   orderId: string;
 };
 
-const CheckoutForm = ({ clientSecret, orderId }: Props) => {
+const CheckoutForm = ({ orderId }: Props) => {
   const stripe = useStripe();
   const elements = useElements();
   const [errorMessage, setErrorMessage] = useState<string>();

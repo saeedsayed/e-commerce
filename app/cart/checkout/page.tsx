@@ -6,7 +6,6 @@ import { axiosInstance } from "@/lib/axios";
 import getStripe from "@/utils/stripe";
 import { Elements } from "@stripe/react-stripe-js";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
 
 const page = () => {
   const { cartIsLoading, coupon, selectedShippingMethod } = useCartContext();
@@ -46,13 +45,9 @@ const page = () => {
           stripe={getStripe()}
           options={{ clientSecret: data?.clientSecret }}
         >
-          <p>your client secret is : {data?.clientSecret}</p>
           <div className="flex flex-col md:flex-row items-start gap-16">
             <div className="flex-1">
-              <CheckoutForm
-                clientSecret={data?.clientSecret || ""}
-                orderId={data?.orderId || ""}
-              />
+              <CheckoutForm orderId={data?.orderId || ""} />
             </div>
             <div className="flex-1 max-w-[443px] mx-auto sticky top-20">
               <OrderSummary bill={data} />
