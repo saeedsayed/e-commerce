@@ -4,7 +4,6 @@ import {
   useStripe,
   useElements,
   PaymentElement,
-  CardElement,
 } from "@stripe/react-stripe-js";
 import { StripeError } from "@stripe/stripe-js";
 import { useState } from "react";
@@ -13,7 +12,6 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import ContactInformationForm from "./ContactInformationForm";
 import ShippingAddressForm from "./ShippingAddressForm";
-import { useCartContext } from "@/context/CartContext";
 import { checkoutFormSchema } from "@/utils/schemes";
 
 type Props = {
@@ -33,7 +31,6 @@ const CheckoutForm = ({ clientSecret, orderId }: Props) => {
   } = useForm({
     resolver: yupResolver(checkoutFormSchema),
   });
-  const { totalCartPrice, selectedShippingMethod } = useCartContext();
   const handleError = (error: StripeError) => {
     setLoading(false);
     setErrorMessage(error.message);
@@ -49,11 +46,6 @@ const CheckoutForm = ({ clientSecret, orderId }: Props) => {
       handleError(submitError);
       return;
     }
-
-    // set client secret and buyer info and shipping method in local storage
-    // localStorage.setItem("client_secret", clientSecret);
-    localStorage.setItem("buyerInfo", JSON.stringify(event));
-    localStorage.setItem("shipping_method", selectedShippingMethod.name);
     const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
