@@ -6,7 +6,6 @@ import { axiosInstance } from "@/lib/axios";
 import { discountCalc } from "@/lib/discountCalc";
 import { IProduct, IReviews } from "@/types";
 import Link from "next/link";
-import { FaStar } from "react-icons/fa";
 import VersionsOfProduct from "@/components/shopPageComponents/product details/VersionsOfProduct";
 import Reviews from "@/components/shopPageComponents/product details/Reviews";
 import RatingStars from "@/components/common/RatingStars";
@@ -67,7 +66,7 @@ const page = async ({ params }: Props) => {
           {/* title */}
           <h1 className="text-4xl my-4 font-bold">{product.title}</h1>
           {/* description */}
-          <p className="text-sub-text">{product.description}</p>
+          <p className="text-sub-text"> <span dangerouslySetInnerHTML={{__html:product.description}} /></p>
           {/* price */}
           <p className="text-3xl font-bold my-6">
             $

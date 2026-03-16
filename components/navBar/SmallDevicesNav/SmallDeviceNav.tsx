@@ -1,23 +1,22 @@
-"use client"
+"use client";
 import React, { useState } from "react";
 // icons
 import { PiShoppingBagLight } from "react-icons/pi";
 import { FaBars } from "react-icons/fa";
 // components
-import NavLogo from "../NavLogo";
 import SideMenu from "./SideMenu";
 import FlyoutCart from "../../flyoutCart/FlyoutCart";
 import { useCartContext } from "@/context/CartContext";
-import { Button, Dots } from "@/components/common";
+import { Button, Dots, Logo } from "@/components/common";
 import Link from "next/link";
 import { useAuthContext } from "@/context/AuthContext";
 
 const SmallDeviceNav = () => {
   const [showMenu, setShowMenu] = useState(false);
   const [showFlyout, setShowFlyout] = useState(false);
-  const { cart } = useCartContext()
-  const { status } = useAuthContext()
-  const cartItemCount = cart.length
+  const { cart } = useCartContext();
+  const { status } = useAuthContext();
+  const cartItemCount = cart.length;
   const handleShowMenu = () => {
     setShowMenu((p) => !p);
   };
@@ -30,7 +29,7 @@ const SmallDeviceNav = () => {
         <button className="w-6 h-6 flex items-center" onClick={handleShowMenu}>
           <FaBars />
         </button>
-        <NavLogo />
+        <Logo />
       </div>
       {status === "loading" && <Dots />}
       {status === "unauthenticated" && (

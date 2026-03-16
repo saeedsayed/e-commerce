@@ -13,7 +13,7 @@ const HeroSection = async () => {
           <br /> Simply Better.
         </h2>
         <p className="flex-1 text-sub-text font-semibold">
-          <span className="text-text">3legant</span> is a gift & decorations
+          <span className="text-text">E-shop</span> is a gift & decorations
           store based in HCMC, Vietnam. Est since 2026.
         </p>
       </div>

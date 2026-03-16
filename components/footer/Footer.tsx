@@ -24,7 +24,7 @@ const Footer = () => {
         </div>
         {/* bottom footer */}
         <div className="border-t pt-4 mt-10 sm:mt-12 flex gap-5 justify-center flex-wrap items-center flex-col-reverse sm:flex-row">
-          <div>Copyright © 2023 3legant. All rights reserved</div>
+          <div>Copyright © 2023 E-shop. All rights reserved</div>
           <div className="flex-1">
             <Link href="" className="text-white font-semibold">
               Privacy Policy

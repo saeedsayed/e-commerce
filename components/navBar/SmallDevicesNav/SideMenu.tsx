@@ -1,9 +1,8 @@
 import React from "react";
 // components
-import NavLogo from "../NavLogo";
 import SearchField from "./SearchField";
 import SideMenuIcons from "./SideMenuIcons";
-import { Flyout } from "../../common";
+import { Flyout, Logo } from "../../common";
 // icons
 import { IoClose } from "react-icons/io5";
 import SideNavLinks from "./SideNavLinks";
@@ -24,7 +23,7 @@ const SideMenu = ({ showMenu, setShowMenu }: Props) => {
       <div className="flex flex-col justify-between h-full">
         <div className="flex flex-col gap-4">
           <div className="flex items-center justify-between">
-            <NavLogo />
+            <Logo />
             <button onClick={setShowMenu}>
               <IoClose className="w-6 h-6" />
             </button>{" "}
